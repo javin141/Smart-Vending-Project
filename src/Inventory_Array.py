@@ -1,4 +1,5 @@
 import sqlite3
+from utils import *
 
 conn = sqlite3.connect('Vending.sqlite')
 
@@ -8,8 +9,7 @@ c.execute("""CREATE TABLE Vending (
         refcode integer,
         drink_name text,
         price integer,
-        slot text,
-        stock text,
+        slot text
     )""")
 
 Initial_stock = [ 
@@ -22,10 +22,31 @@ Initial_stock = [
                     ('0007','7-up','1.4','39,40,41,42,43,44,45')
 ]
 
-c.executemany("INSERT INTO Vending Values (?,?,?)", Initial_stock)
+c.executemany("INSERT INTO Vending Values (?,?,?,?)", Initial_stock)
 
 c.execute("Select * FROM Vending")
 print(c.fetchall())
 print("Successful execution")
 conn.commit()
-conn.close()
+
+def get_item(refcode: int) -> dict:
+
+    cu = conn.cursor()
+    cu.execute("SELECT * FROM Vending WHERE refcode=?", str(refcode))
+    results = cu.fetchall()
+    items = {
+        "refcode": results[0],
+        "name": results[1],
+        "price": results[2],
+        }
+
+    slots = deserialise_ints(results[3])
+    items["slots"] = slots
+    return items
+
+
+def set_
+
+
+while True:
+    exec(input(">>>"))
