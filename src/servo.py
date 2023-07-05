@@ -1,7 +1,7 @@
 import RPi.GPIO as GPIO
 from time import sleep
 
-def servo_init():
+def init():
     GPIO.setmode(GPIO.BCM)  # choose BCM mode
     GPIO.setwarnings(False)
     GPIO.setup(26, GPIO.OUT)  # set GPIO 26 as output
