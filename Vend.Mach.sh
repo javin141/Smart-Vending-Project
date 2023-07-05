@@ -9,10 +9,11 @@ do
         while read startup_text
         do
             case $startup_text in
-            /)  echo "returning"    ;;
-            *)  echo "Unknown_Input"    break;;
+            /)  echo "returning"   
+             break;;
+            *)  echo "Unknown_Input";;
         esac
-        done;;
+        done;;  
         config)     echo "entering config"      
         while read config_text
         do
@@ -20,8 +21,9 @@ do
             network)    ifconfig    ;;
             website)    echo "website status"   ;;
             stock)      python print_array.py   ;;
+            /)          echo "returning"    
+            break;;
             *)          echo "Unknown Input"    ;;
-            /)          echo "returning"        break;;
         esac
             done;;
         *)  exit ;;
