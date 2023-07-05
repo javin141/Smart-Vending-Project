@@ -8,8 +8,7 @@ c.execute("""CREATE TABLE Vending (
         refcode integer,
         drink_name text,
         price integer,
-        slot text,
-        stock text,
+        slot text
     )""")
 
 Initial_stock = [ 
@@ -22,7 +21,7 @@ Initial_stock = [
                     ('0007','7-up','1.4','39,40,41,42,43,44,45')
 ]
 
-c.executemany("INSERT INTO Vending Values (?,?,?)", Initial_stock)
+c.executemany("INSERT INTO Vending Values (?,?,?,?)", Initial_stock)
 
 c.execute("Select * FROM Vending")
 print(c.fetchall())
