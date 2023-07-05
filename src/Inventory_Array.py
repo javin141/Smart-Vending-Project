@@ -4,7 +4,7 @@ conn = sqlite3.connect('Vending.sqlite')
 
 c = conn.cursor()
 
-c.execute("""CREATE TABLE inventory (
+c.execute("""CREATE TABLE Vending (
         refcode integer,
         drink_name text,
         price integer
