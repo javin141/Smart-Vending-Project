@@ -1,10 +1,11 @@
-import sqlite3
+import sqlite3, os
 from utils import *
 
 DB_FILENAME = 'Vending.sqlite'
 conn = sqlite3.connect(DB_FILENAME)
+c = conn.cursor()
+
 if not os.path.exists(DB_FILENAME):
-    c = conn.cursor()
 
     c.execute("""CREATE TABLE Vending (
             refcode integer,
@@ -25,16 +26,16 @@ if not os.path.exists(DB_FILENAME):
 
     c.executemany("INSERT INTO Vending Values (?,?,?,?)", Initial_stock)
 
-    c.execute("Select * FROM Vending")
-    print(c.fetchall())
-    print("Successful execution")
-    conn.commit()
 
+    conn.commit()
+c.execute("Select * FROM Vending")
+print(c.fetchall())
+print("Successful execution")
 def get_item(refcode: int) -> dict:
 
     cu = conn.cursor()
     cu.execute("SELECT * FROM Vending WHERE refcode=?", str(refcode))
-    results = cu.fetchall()
+    results = cu.fetchall()[0]
     items = {
         "refcode": results[0],
         "name": results[1],
@@ -46,7 +47,45 @@ def get_item(refcode: int) -> dict:
     return items
 
 
-def set_
+def update_item(refcode: int, new_item: dict):
+    cu = conn.cursor()
+
+    sql = "UPDATE Vending SET "
+    binding = []
+    if "name" in new_item:
+        sql += "name=? , "
+        binding.append(new_item["name"])
+
+    if "price" in new_item:
+        sql += "price=? , "
+        binding.append(new_item["price"])
+
+    if "slot" in new_item:
+        sql += "slot=? , "
+        binding.append(serialise_ints(new_item["slot"]))
+
+    if "stock" in new_item:
+        sql += "stock=? , "
+        binding.append(serialise_ints(new_item["stock"]))
+
+    if len(binding) == 0:
+        return None
+
+    sql = sql.strip(", ")
+    sql += " WHERE refcode=?"
+    binding.append(refcode)
+
+    print("SQL QUERY", sql, binding)
+    cu.execute(sql, binding)
+
+
+    ''' UPDATE tasks
+              SET priority = ? ,
+                  begin_date = ? ,
+                  end_date = ?
+              WHERE id = ?'''
+
+# def add_to(refcode)
 
 
 while True:
