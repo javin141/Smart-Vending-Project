@@ -7,17 +7,19 @@ c = conn.cursor()
 c.execute("""CREATE TABLE Vending (
         refcode integer,
         drink_name text,
-        price integer
+        price integer,
+        slot text,
+        stock text,
     )""")
 
 Initial_stock = [ 
-                    ('0001','Coca-cola','1.5'),
-                    ('0002','Sprite','1.7'),
-                    ('0003','A&W','1.8'),
-                    ('0004','Fanta_Grape','1.2'),
-                    ('0005','Ice_Lemon_Tea','1.8'),
-                    ('0006','Coke_Zero','1.7'),
-                    ('0007','7-up','1.4')
+                    ('0001','Coca-cola','1.5','1,2,3,4,5,6'),
+                    ('0002','Sprite','1.7','7,8,9,10,11'),
+                    ('0003','A&W','1.8','12,13,14,15,16,17'),
+                    ('0004','Fanta_Grape','1.2','18,19,20,21,22,23'),
+                    ('0005','Ice_Lemon_Tea','1.8','24,25,26,27,28,29,30'),
+                    ('0006','Coke_Zero','1.7','31,32,33,34,35,36,37,38'),
+                    ('0007','7-up','1.4','39,40,41,42,43,44,45')
 ]
 
 c.executemany("INSERT INTO Vending Values (?,?,?)", Initial_stock)
