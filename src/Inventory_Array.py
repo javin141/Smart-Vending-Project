@@ -79,11 +79,6 @@ def update_item(refcode: int, new_item: dict):
     cu.execute(sql, binding)
 
 
-    ''' UPDATE tasks
-              SET priority = ? ,
-                  begin_date = ? ,
-                  end_date = ?
-              WHERE id = ?'''
 
 # def add_to(refcode)
 
