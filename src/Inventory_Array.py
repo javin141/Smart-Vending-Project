@@ -32,6 +32,13 @@ c.execute("Select * FROM Vending")
 print(c.fetchall())
 print("Successful execution")
 def get_item(refcode: int) -> dict:
+    """
+    Gets an item based on its refcode.
+    :param refcode: refcode of the item, an int.
+    :return: a dictionary representing the item's structure.
+        Keys available: refcode (int), name (str), price (float), slots (list)
+
+    """
 
     cu = conn.cursor()
     cu.execute("SELECT * FROM Vending WHERE refcode=?", str(refcode))
