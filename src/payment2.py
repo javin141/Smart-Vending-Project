@@ -66,6 +66,35 @@ def read_card(price: float, payment_method: PaymentMethod = RFIDPay()) -> bool:
 
 
 
+def pay(refcode: int):
+    item = get_item(refcode)
+    name = item["name"]
+    price = item["price"]
+
+    def user_intent(intent: bool):
+        if intent:
+            # We call the rest of the code from here.
+
+            success = read_card(price)
+
+            if success:
+                lcd.lcd_clear()
+                lcd.lcd_display_string("Payment successful", 1)
+                # Move to dispensing.
+            else:
+                lcd.lcd_clear()
+                lcd.lcd_display_string("Payment failure", 1)
+                time.sleep(2)
+                # Recursively call the prompt function
+                prompt(name, price, user_intent)
+
+        else:
+            lcd.lcd_clear()
+            lcd.lcd_display_string("Have a nice day!", 1)
+            # Else, we just return.
+    prompt(name, price, user_intent)
+
+
 
 #
 # class Transaction:
