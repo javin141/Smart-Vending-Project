@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const userSchema = new mongoose.Schema({
     username: String,
     passwordHash: String,
+    name: String,
     orders: [
         {
             type: mongoose.Schema.Types.ObjectId,
