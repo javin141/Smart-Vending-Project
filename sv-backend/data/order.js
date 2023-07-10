@@ -4,6 +4,8 @@ const orderSchema = new mongoose.Schema({
     name: String,
     price: Number,
     redeemCode: String,
+    time: Number,
+    slot: Number,
     user: {type: mongoose.Schema.Types.ObjectId, ref: 'User'}
 })
 
@@ -15,3 +17,4 @@ orderSchema.set("toJSON", {
     }
 })
 const Order = mongoose.model("Order", orderSchema)
+module.exports = Order
