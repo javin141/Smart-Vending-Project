@@ -16,3 +16,4 @@ class MyBankPaymentMethod extends PaymentMethod {
     bankCode: string = "myBank"
 
 }
+module.exports = {PaymentMethod, MyBankPaymentMethod}
