@@ -1,15 +1,11 @@
 import time
 
 def dispense_drink(refcode):
-    # Connect to the database
-    conn = sqlite3.connect('Vending.sqlite')
-    c = conn.cursor()
 
-    # Fetch the drink name from the database
-    c.execute("SELECT drink_name FROM Vending WHERE refcode=?", (refcode,))
-    drink_name = c.fetchone()
+    # Fetch the drink details from the get_item function
+    item = get_item(refcode)
 
-    if drink_name:
+    if item:
         # Initialize the servo and LCD
         init()
         lcd_dispenser = lcd()
@@ -19,7 +15,7 @@ def dispense_drink(refcode):
 
         # Display "Currently dispensing [Drink Name]"
         lcd_dispenser.lcd_display_string("Currently dispensing", 1)
-        lcd_dispenser.lcd_display_string(drink_name[0], 2)
+        lcd_dispenser.lcd_display_string(item["name"], 2)
 
         # Wait for 10 seconds
         time.sleep(10)
@@ -36,6 +32,3 @@ def dispense_drink(refcode):
 
         # Clear the display
         lcd_dispenser.lcd_clear()
-
-    # Close the database connection
-    conn.close()
