@@ -3,7 +3,8 @@ const orderSchema = new mongoose.Schema({
     refcode: Number,
     name: String,
     price: Number,
-    redeemCode: String
+    redeemCode: String,
+    user: {type: mongoose.Schema.Types.ObjectId, ref: 'User'}
 })
 
 
@@ -13,4 +14,4 @@ orderSchema.set("toJSON", {
         rto.id = rto._id.toString()
     }
 })
-const Order =mongoose.model("Order", orderSchema)
+const Order = mongoose.model("Order", orderSchema)
