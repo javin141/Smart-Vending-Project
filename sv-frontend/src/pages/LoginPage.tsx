@@ -2,16 +2,13 @@ import {Box, Button, FormControl, Snackbar, TextField, ToggleButton, ToggleButto
 import {Form} from "react-router-dom";
 import {createRef, useRef, useState} from "react";
 import {useNavigate} from "react-router-dom"
+import {setCookie} from "../utils";
+import {login, LoginResult, signup} from "../auth";
 
 enum Login {
     LOGIN, SIGNUP
 }
 
-function createCookie(fieldname, fieldvalue) {
-    // TODO: extra feature: session cookie expiry
-    document.cookie = fieldname + "=" + fieldvalue +
-         ";path=/";
-}
 
 const LoginForm = () => {
     const navigate = useNavigate()
@@ -23,32 +20,16 @@ const LoginForm = () => {
 
     async function loginCallback(event) {
         event.preventDefault()
-        const data = {
-            username: user,
-            password: pw
-        }
 
-        const result = await fetch("http://localhost:6788/users/login", {
-            method: "POST",
-            // mode: "cors",
-            cache: "no-cache",
-            // credentials: "same-origin", // include, *same-origin, omit
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(data)
-        })
+        const loginResult: LoginResult = await login(user, pw, "Login failed")
 
-        console.log(result)
-        if (result.status === 200) {
+
+        if (loginResult.success) {
             // event.target.setAttribute("autocomplete", "on");
             setErrMsg("Login successful")
-            const token = (await result.json()).token
-            createCookie("SESSION", token)
             navigate("/")
-
         } else {
-            setErrMsg("Login failed")
+            setErrMsg(loginResult.errMsg ?? "Login failed")
         }
     }
 
@@ -86,36 +67,12 @@ const SignupForm = ( ) => {
             password: signPw,
             name: signName
         }
-
-        const result = await fetch("http://localhost:6788/users/signup", {
-            method: "POST",
-            mode: "cors",
-            cache: "no-cache",
-            // credentials: "same-origin", // include, *same-origin, omit
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(data)
-        })
-
-        console.log(result)
-        if (result.status === 201) {
+        const signupResult: LoginResult = await signup(signUser, signPw, signName, "Signup failed")
+        if (signupResult.success) {
             setErrMsg("Signup successful")
-            const token = (await result.json()).token
-            createCookie("SESSION", token)
             navigate("/")
         } else {
-            const res = await result.json()
-            if (res?.["errphrase"]) {
-                switch (res?.["errphrase"]) {
-                    case "unt-6":
-                        setErrMsg("Username taken")
-                        break
-                    default:
-                        setErrMsg("Login failed")
-
-                }
-            }
+            setErrMsg(signupResult.errMsg ?? "Signup failed")
         }
     }
 
