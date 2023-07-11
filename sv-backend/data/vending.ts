@@ -10,10 +10,10 @@ type VendingItem = {
 }
 
 abstract class VendingDataProvider {
-    abstract getItem(refcode: number): VendingItem
-    abstract getItemBySlot(slot: number): VendingItem
-    abstract changeStockBy(vendingItem: VendingItem, slot: number, by: number)
-    abstract findSlot(refcode: number): number
+    abstract getItem(refcode: number): VendingItem|undefined
+    abstract getItemBySlot(slot: number): VendingItem|undefined
+    abstract changeStockBy(vendingItem: VendingItem, slot: number, by: number): void
+    abstract findSlot(refcode: number): number|null
 }
 
 class MockVendingProvider extends VendingDataProvider {
@@ -49,7 +49,7 @@ class MockVendingProvider extends VendingDataProvider {
     }
 
 
-    getItemBySlot(slot: number): VendingItem {
+    getItemBySlot(slot: number): VendingItem|undefined {
         return this.inventory.find((value) => {
             return value.slotStock.find((slotStock) => {
                 return slotStock.slot == slot
@@ -58,13 +58,18 @@ class MockVendingProvider extends VendingDataProvider {
     }
 
     changeStockBy(vendingItem: VendingItem, slot: number, by: number) {
-        this.inventory[vendingItem.refcode]
-            .slotStock.find((val) => val.slot == slot).stock += 1
+        const item = this.inventory[vendingItem.refcode]
+        if (item === undefined) {return null}
+        item.slotStock.find((val) => val?.slot == slot)!!.stock += 1
     }
 
 
-    findSlot(refcode: number): number {
-        return this.inventory[refcode].slotStock.find((ss) => ss.stock > 0).slot ?? null
+    findSlot(refcode: number): number|null {
+        const item = this.inventory[refcode]
+        if (item === undefined) {
+            return null
+        }
+        return item.slotStock.find((ss) => ss.stock > 0)?.slot ?? null
     }
 }
 
