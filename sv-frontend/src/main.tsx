@@ -6,6 +6,7 @@ import {BrowserRouter, Route, Routes} from "react-router-dom";
 import {createRoot} from "react-dom/client";
 import Homepage from "./pages/Homepage";
 import MyAppBar from "./components/MyAppBar";
+import LoginPage from "./pages/LoginPage";
 
 const root = createRoot(document.getElementById("root"));
 
@@ -19,6 +20,7 @@ root.render(
             <Routes>
                 <Route path="/" element={<Homepage/>}/>
                 <Route path="/cart"/>
+                <Route path="/login" element={<LoginPage/>}/>
             </Routes>
             </div>
         </div>
