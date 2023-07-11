@@ -1,41 +1,54 @@
 const express = require("express")
+const dotenv = require("dotenv")
 const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
+const cors = require('cors')
 const User = require("./data/user");
 const bodyParser = require("body-parser");
-const {MyBankPaymentMethod} = require("./payment");
+const {MyBankPaymentMethod} = require("./payment.ts");
 const {MockVendingProvider, VendingDataProvider} = require("./data/vending");
 const Order = require("./data/order");
 const {getTokenFromReq} = require("./utils");
+const mongoose = require("mongoose");
 const app = express()
 
+dotenv.config()
+
+mongoose.connect(process.env.MONGODB_URL)
+
+app.use(cors())
 app.use(bodyParser.json())
+
 app.get("/", (req, res) => {
     res.send("Hello World!")
 })
 
 const ua = express.Router()
 
-ua.get("/", async (req, res) => {
+ua.post("/login", async (req, res) => {
     const {username, password} = req.body
 
     const user = await User.findOne({username})
     const pwCorrect = user ? await bcrypt.compare(password, user.passwordHash) : false
     if (!pwCorrect) {
-        res.status(403).json({error: "403 Forbidden, invalid credentials"})
+        return res.status(403).json({error: "403 Forbidden, invalid credentials"})
     }
 
     const privKey = process.env["JWT_KEY"]
     const token = jwt.sign({
-        username: user.username,
+        username: user?.username,
         id: user._id // For access via findById
     }, privKey)
 
     res.status(200).json({token, username: user.username})
 })
 
-ua.post("/", async (req, res) => {
+ua.post("/signup", async (req, res) => {
     const {username, password, name} = req.body // Destructuring of body
+    if (await User.findOne({username})) {
+        return res.status(400).json({error: "Username taken", errphrase: "unt-6"})
+
+    }
     const saltRounds = 10
     const passwordHash = await bcrypt.hash(password, saltRounds)
 
@@ -43,8 +56,15 @@ ua.post("/", async (req, res) => {
         username, passwordHash, name
     }) // Create it just like an object
 
-    const theUser = await currentUser.save()
-    res.status(201).json(theUser)
+    let theUser = await currentUser.save()
+
+    const privKey = process.env["JWT_KEY"]
+    const token = jwt.sign({
+        username: theUser.username,
+        id: theUser._id // For access via findById
+    }, privKey)
+
+    res.status(201).json({token})
 })
 
 
@@ -92,4 +112,12 @@ oa.post("/", async (req, res) => {
 
     }
 
+})
+
+app.use("/users", ua)
+app.use("/order", oa)
+
+const PORT = 6788
+app.listen(PORT, () => {
+    console.log(`Server is listening on ${PORT}`)
 })
