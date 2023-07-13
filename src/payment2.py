@@ -2,11 +2,12 @@ import asyncio
 from asyncio import Future
 from abc import ABC, abstractmethod
 import time
+from threading import Thread
 
 from hal import hal_lcd, hal_keypad, hal_rfid_reader, hal_key_l
 from typing import Callable
 
-from src.Inventory_Array import get_item
+from Inventory_Array import get_item
 
 lcd = hal_lcd.lcd()
 # keypad = hal_keypad.HALKeypad()
@@ -28,13 +29,12 @@ class PaymentMethod(ABC):
 class RFIDPay(PaymentMethod):
 
     def process_payment(self, card_id: str, price: float) -> bool:
-        return True  # TODO: check the actual ID of the RFID tag
+        return card_id == 988654710544 # TODO: check the actual ID of the RFID tag
 
 
 def prompt(name: str, price: float, when_finished: Callable[[bool], None]):
     lcd.lcd_display_string(name, 1)
     lcd.lcd_display_string(f"${price} Yes(#)/No(*)", 2)
-
 
     def callback(position):
         if position == "*":
@@ -44,6 +44,8 @@ def prompt(name: str, price: float, when_finished: Callable[[bool], None]):
 
 
     hal_key_l.change_callback(callback)
+    keypad_thread =  Thread(target=hal_key_l.get_key)
+    keypad_thread.start()
 
 
 def read_card(price: float, payment_method: PaymentMethod = RFIDPay()) -> bool:
@@ -64,7 +66,15 @@ def read_card(price: float, payment_method: PaymentMethod = RFIDPay()) -> bool:
     return success
 
 
+def update_stock(refcode: int, difference: int, slot: int):
+    item = get_item(refcode)
+    stock = item["stock"]
+    slots = item["slot"]
+    index = slots.index(slot)
+    stock[index] += difference
 
+    update_dict = {"stock": stock}
+    update_item(refcode, update_item)
 
 def pay(refcode: int):
     item = get_item(refcode)
@@ -80,6 +90,8 @@ def pay(refcode: int):
             if success:
                 lcd.lcd_clear()
                 lcd.lcd_display_string("Payment successful", 1)
+                slot = 
+                update_stock(refcode, 
                 # Move to dispensing.
             else:
                 lcd.lcd_clear()
@@ -93,6 +105,7 @@ def pay(refcode: int):
             lcd.lcd_display_string("Have a nice day!", 1)
             # Else, we just return.
     prompt(name, price, user_intent)
+
 
 
 
