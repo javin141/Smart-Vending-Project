@@ -6,6 +6,7 @@ import MyAppBar from "./components/MyAppBar";
 import LoginPage from "./pages/LoginPage";
 import {PayPage} from "./pages/PayPage";
 import {Provider} from 'react-redux'
+import OrderPage from "./pages/OrderPage.tsx";
 import {configureStore} from "@reduxjs/toolkit";
 import loginReducer, {localStorageMiddleware} from "./login_reducers.ts";
 
@@ -27,6 +28,7 @@ root.render(
 
                     <Routes>
                         <Route path="/" element={<Homepage/>}/>
+                        <Route path="/orders" element={<OrderPage/>}/>
                         <Route path="/login" element={<LoginPage/>}/>
                         <Route path="/pay" element={<PayPage/>}/>
                     </Routes>
