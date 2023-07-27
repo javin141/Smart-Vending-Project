@@ -1,7 +1,13 @@
-import {getTotalStock, VendingItem} from "../objs/VendingItem";
+import {getTotalStock} from "../objs/VendingItem";
+import {VendingItem}  from "../objs/VendingItem";
 import {Card, CardActionArea, CardContent, Typography} from "@mui/material";
 import {useNavigate} from "react-router-dom"
-export const Item = ({vendingItem}) => {
+
+interface ItemProps {
+    vendingItem: VendingItem
+}
+
+export const Item = ({vendingItem}: ItemProps) => {
     const navigate = useNavigate()
     const stock: number = getTotalStock(vendingItem)
     if (!vendingItem.price || vendingItem.price < 0) {
@@ -13,7 +19,7 @@ export const Item = ({vendingItem}) => {
         stockColor = {color: "#FF0000"}
     }
     function cardClicked() {
-        navigate("/pay", {vendingItem})
+        navigate("/pay", {state: {vendingItem}})
     }
     return (
         <Card sx={{margin: 4}} variant="outlined" >
