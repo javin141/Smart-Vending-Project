@@ -97,14 +97,20 @@ export const PayPage = () => {
 
     function checkout() {
         payFor(item!, getCardDetails())
-            .then(result => {
-                
+            .then(_ => {
+                setDialog({
+                    title: "Payment successful",
+                    message: `Enjoy your drink! Your purchase of ${item?.name ?? "the drink"} was successful`,
+                    action: "Proceed to orders",
+                    actionCode: DialogAction.PAYMENT_SUCCESS
+                })
             })
             .catch(reason => {
                 // An error has occured.
                 setDialog({
                     title: "Error",
-                    message: reason,
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
+                    message: reason.message ?? "Error in processing payment.",
                     action: "Try again",
                     actionCode: DialogAction.PAYMENT_ERR
                 })
@@ -119,9 +125,10 @@ export const PayPage = () => {
                 navigate("/")
                 break
             case DialogAction.PAYMENT_ERR:
+                setDialog(null)
                 break
             case DialogAction.PAYMENT_SUCCESS:
-                navigate("/")
+                navigate("/orders")
         }
     }
 
