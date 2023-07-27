@@ -1,4 +1,5 @@
 import {getCookie, setCookie} from "./utils";
+import {errPhraseToMsg, ErrResult} from "./objs/ErrResult.ts";
 
 export function getLogin(): string|boolean {
     const cookie = getCookie("SESSION")
@@ -12,20 +13,18 @@ export type LoginResult = {
     errMsg?: string
 }
 
-
-function errPhraseToMsg(errPhrase: string|undefined, fallback: string|undefined): string {
-    switch (errPhrase) {
-        case "ivt-3": return "Invalid token"
-        case "jtb-3": return "User not found"
-        case "nas-1": return "No available stock"
-        case "bns-2": return "Bank not supported"
-        case "pay-4": return "Payment failure"
-        case "unt-6": return "Username taken"
-        default:
-            console.error("Error", errPhrase)
-            return fallback || "Error"
-    }
+export interface CardDetails {
+    owner: string
+    cardNumber: string
+    expDate: string
+    cvv: number
+    bankCode: string
 }
+
+export function getBearer() {
+    return `Bearer ${getCookie("SESSION") ?? ""}`
+}
+
 
 
 export async function login(username: string, password: string, failureMsg: string): Promise<LoginResult> {
@@ -54,7 +53,7 @@ export async function login(username: string, password: string, failureMsg: stri
             token
         }
     } else {
-        const {errphrase, error} = (await result.json())
+        const {errphrase, error} = (await result.json()) as ErrResult
         const errMsg = errPhraseToMsg(errphrase, error || failureMsg)
         return {
             success: false,
@@ -93,7 +92,7 @@ export async function signup(name: string, username: string, password: string, f
             token
         }
     } else {
-        const {errphrase, error} = (await result.json())
+        const {errphrase, error} = (await result.json()) as ErrResult
         const errMsg = errPhraseToMsg(errphrase, error || failureMsg)
         return {
             success: false,
