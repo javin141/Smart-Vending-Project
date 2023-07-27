@@ -18,6 +18,9 @@ const MyAppBar = () => {
             }}>
                 <Link to="/" style={{textDecoration: "none", margin: "8px"}}>Home</Link>
                 <Link to="/cart" style={{textDecoration: "none", margin: "8px"}}>Cart</Link>
+                <Link to="/orders" style={{textDecoration: "none", margin: "8px"}}>Orders</Link>
+
+
             </div>
         </AppBar>
     )
