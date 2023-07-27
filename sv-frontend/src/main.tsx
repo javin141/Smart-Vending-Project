@@ -1,31 +1,39 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import App from './App.tsx'
+import {createRoot} from 'react-dom/client'
 import './index.css'
 import {BrowserRouter, Route, Routes} from "react-router-dom";
-import {createRoot} from "react-dom/client";
 import Homepage from "./pages/Homepage";
 import MyAppBar from "./components/MyAppBar";
 import LoginPage from "./pages/LoginPage";
 import {PayPage} from "./pages/PayPage";
+import {Provider} from 'react-redux'
+import {configureStore} from "@reduxjs/toolkit";
+import loginReducer, {localStorageMiddleware} from "./login_reducers.ts";
 
-const root = createRoot(document.getElementById("root"));
+const root = createRoot(document.getElementById("root")!);
+
+const store = configureStore({
+    reducer: {login: loginReducer},
+    middleware: (gDM) => gDM().concat(localStorageMiddleware)
+})
+
 
 root.render(
-    <BrowserRouter>
-        <div>
-            <MyAppBar/>
+    <Provider store={store}>
+        <BrowserRouter>
+            <div>
+                <MyAppBar/>
 
-            <div className="main">
+                <div className="main">
 
-            <Routes>
-                <Route path="/" element={<Homepage/>}/>
-                <Route path="/cart"/>
-                <Route path="/login" element={<LoginPage/>}/>
-                <Route path="/pay" element={<PayPage/>}/>
-            </Routes>
+                    <Routes>
+                        <Route path="/" element={<Homepage/>}/>
+                        <Route path="/login" element={<LoginPage/>}/>
+                        <Route path="/pay" element={<PayPage/>}/>
+                    </Routes>
+                </div>
             </div>
-        </div>
-    </BrowserRouter>
-
+        </BrowserRouter>
+    </Provider>
 );
+
+export {store}
