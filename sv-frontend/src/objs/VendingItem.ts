@@ -1,4 +1,4 @@
-export type VendingItem = {
+export interface VendingItem {
     name: string
     refcode: number
     slotStock: SlotStock[],
