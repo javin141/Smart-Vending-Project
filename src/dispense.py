@@ -1,5 +1,10 @@
 import time
 
+from Inventory_Array import get_item
+from src.hal.hal_lcd import lcd
+from hal.hal_servo import set_servo_position, init
+
+
 def dispense_drink(refcode):
 
     # Fetch the drink details from the get_item function

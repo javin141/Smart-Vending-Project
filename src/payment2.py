@@ -7,7 +7,7 @@ from threading import Thread
 from hal import hal_lcd, hal_keypad, hal_rfid_reader, hal_key_l
 from typing import Callable
 
-from Inventory_Array import get_item
+from Inventory_Array import get_item, choose_slot
 
 lcd = hal_lcd.lcd()
 # keypad = hal_keypad.HALKeypad()
@@ -90,9 +90,10 @@ def pay(refcode: int):
             if success:
                 lcd.lcd_clear()
                 lcd.lcd_display_string("Payment successful", 1)
-                slot = 
-                update_stock(refcode, 
+                slot = choose_slot(refcode)
+                update_stock(refcode, -1, slot)
                 # Move to dispensing.
+                dispense_drink(refcode)
             else:
                 lcd.lcd_clear()
                 lcd.lcd_display_string("Payment failure", 1)
