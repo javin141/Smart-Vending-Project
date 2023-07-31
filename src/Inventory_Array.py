@@ -6,12 +6,13 @@ conn = sqlite3.connect(DB_FILENAME)
 c = conn.cursor()
 
 if not os.path.exists(DB_FILENAME):
-
+    print("PATH DOES NOT EXIST!")
     c.execute("""CREATE TABLE Vending (
             refcode integer,
             drink_name text,
             price integer,
             slot text
+            stock text
         )""")
 
     Initial_stock = [
@@ -32,6 +33,13 @@ c.execute("Select * FROM Vending")
 print(c.fetchall())
 print("Successful execution")
 def get_item(refcode: int) -> dict:
+    """
+    Gets an item based on its refcode.
+    :param refcode: refcode of the item, an int.
+    :return: a dictionary representing the item's structure.
+        Keys available: refcode (int), name (str), price (float), slots (list)
+
+    """
 
     cu = conn.cursor()
     cu.execute("SELECT * FROM Vending WHERE refcode=?", str(refcode))
@@ -79,7 +87,15 @@ def update_item(refcode: int, new_item: dict):
     cu.execute(sql, binding)
 
 
-
+def choose_slot(refcode: int) -> int|NoneType:
+    item = get_item(refcode)
+    slots = item["slot"]
+    slot = None
+    for i in slots:
+        if i != 0:
+            slot = i
+            break
+    return slot
 # def add_to(refcode)
 
 """
