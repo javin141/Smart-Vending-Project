@@ -5,6 +5,8 @@ import {useEffect, useMemo, useState} from "react";
 import {VendingItem} from "../objs/VendingItem";
 import {getItems} from "../vending";
 import {Item} from "../components/VendingItem";
+import {useSelector} from "react-redux";
+import {LoginState} from "../login_reducers.ts";
 
 const Onboarding = () => {
     return <div style={{display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center"}}>
@@ -26,7 +28,7 @@ const Shop = () => {
     useEffect(() => {
 
         let active = true
-        load() // We just want to execute the function, so no .then is required.
+        void load() // We just want to execute the function, so no .then is required.
         return () => {
             active = false
         }
@@ -57,7 +59,8 @@ const Shop = () => {
 
 
 const Homepage = () => {
-    const loggedIn = getLogin()
+    const loggedIn = useSelector((state) => (state as JSON).login.login)
+    console.log("Logged in", loggedIn)
     return (
         <div style={{display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", marginLeft: "auto", marginRight: "auto"}}>
 
