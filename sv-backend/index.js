@@ -122,6 +122,38 @@ oa.post("/", async (req, res) => {
 })
 
 
+oa.get("/", async (req, res) => {
+    console.log("GET DRINKS")
+    const vendingDataProvider = new MockVendingProvider()
+    // There is NO NEED to authenticate as this data is not user specific nor sensitive.
+    const allItems = vendingDataProvider.getAllItems()
+    return res.status(200).json(allItems)
+})
+
+
+oa.get("/orders", async (req, res) => {
+    console.log("Orders endpoint")
+    const token = getTokenFromReq(req)
+    const userToken = jwt.verify(token, process.env["JWT_KEY"])
+    if (!userToken.id) {
+        return res.status(401).json({error: "Invalid token", errphrase: "ivt-3"})
+    }
+    const user = await User.findById(userToken.id)
+    if (user == null) {
+        return res.status(404).json({error: "User not found!", errphrase: "jtb-3"})
+    }
+
+
+    const userPopulated = await user.populate({
+        path: 'orders',
+        model: 'Order'
+    })
+    console.log("userpopulated", userPopulated)
+    const allOrders = userPopulated.orders
+    console.log("allOrders", allOrders)
+    return res.status(200).json(allOrders)
+})
+
 app.use("/users", ua)
 app.use("/drinks", oa)
 
