@@ -1,7 +1,7 @@
 import time
 
 from Inventory_Array import get_item
-from src.hal.hal_lcd import lcd
+from hal.hal_lcd import lcd
 from hal.hal_servo import set_servo_position, init
 
 
@@ -19,18 +19,18 @@ def dispense_drink(refcode):
         set_servo_position(90)
 
         # Display "Currently dispensing [Drink Name]"
-        lcd_dispenser.lcd_display_string("Currently dispensing", 1)
+        lcd_dispenser.lcd_display_string("Dispensing", 1)
         lcd_dispenser.lcd_display_string(item["name"], 2)
 
         # Wait for 10 seconds
-        time.sleep(10)
+        time.sleep(2)
 
         # Spin the servo back to 0 degrees
         set_servo_position(0)
 
         # Display "Dispensing complete!"
         lcd_dispenser.lcd_clear()
-        lcd_dispenser.lcd_display_string("Dispensing complete!", 1)
+        lcd_dispenser.lcd_display_string("Complete!", 1)
 
         # Wait for another 10 seconds
         time.sleep(10)
