@@ -14,6 +14,7 @@ abstract class VendingDataProvider {
     abstract getItemBySlot(slot: number): VendingItem|undefined
     abstract changeStockBy(vendingItem: VendingItem, slot: number, by: number): void
     abstract findSlot(refcode: number): number|null
+    abstract getAllItems(): VendingItem[]
 }
 
 class MockVendingProvider extends VendingDataProvider {
@@ -27,7 +28,7 @@ class MockVendingProvider extends VendingDataProvider {
         {
             "refcode": 2,
             "name": "Sprite",
-            "slotStock": [{slot: 4, stock: 5}, {slot: 5, stock: 7}, {slot: 6, stock: 4}],
+            "slotStock": [{slot: 4, stock: 1}, {slot: 5, stock: 1}, {slot: 6, stock: 1}],
             "price": 1.25
         },
         {
@@ -70,6 +71,10 @@ class MockVendingProvider extends VendingDataProvider {
             return null
         }
         return item.slotStock.find((ss) => ss.stock > 0)?.slot ?? null
+    }
+
+    getAllItems(): VendingItem[] {
+        return this.inventory
     }
 }
 
