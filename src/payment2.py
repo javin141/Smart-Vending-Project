@@ -7,7 +7,8 @@ from threading import Thread
 from hal import hal_lcd, hal_keypad, hal_rfid_reader, hal_key_l
 from typing import Callable
 
-from Inventory_Array import get_item, choose_slot
+from Inventory_Array import get_item, choose_slot, update_item
+from dispense import dispense_drink
 
 lcd = hal_lcd.lcd()
 # keypad = hal_keypad.HALKeypad()
@@ -45,6 +46,7 @@ def prompt(name: str, price: float, when_finished: Callable[[bool], None]):
 
     hal_key_l.change_callback(callback)
     keypad_thread =  Thread(target=hal_key_l.get_key)
+    time.sleep(1)
     keypad_thread.start()
 
 
@@ -69,12 +71,12 @@ def read_card(price: float, payment_method: PaymentMethod = RFIDPay()) -> bool:
 def update_stock(refcode: int, difference: int, slot: int):
     item = get_item(refcode)
     stock = item["stock"]
-    slots = item["slot"]
+    slots = item["slots"]
     index = slots.index(slot)
     stock[index] += difference
 
     update_dict = {"stock": stock}
-    update_item(refcode, update_item)
+    update_item(refcode, update_dict)
 
 def pay(refcode: int):
     item = get_item(refcode)
@@ -89,7 +91,7 @@ def pay(refcode: int):
 
             if success:
                 lcd.lcd_clear()
-                lcd.lcd_display_string("Payment successful", 1)
+                lcd.lcd_display_string("Payment success", 1)
                 slot = choose_slot(refcode)
                 update_stock(refcode, -1, slot)
                 # Move to dispensing.
