@@ -10,6 +10,7 @@ const {MockVendingProvider, VendingDataProvider} = require("./data/vending");
 const Order = require("./data/order");
 const {getTokenFromReq} = require("./utils");
 const mongoose = require("mongoose");
+const {sendOrder} = require("./interfacing/pi");
 const app = express()
 
 dotenv.config()
@@ -37,7 +38,8 @@ ua.post("/login", async (req, res) => {
     const privKey = process.env["JWT_KEY"]
     const token = jwt.sign({
         username: user?.username,
-        id: user._id // For access via findById
+        id: user._id, // For access via findById
+        name: user?.name
     }, privKey)
 
     res.status(200).json({token, username: user.username})
@@ -73,6 +75,8 @@ const oa = express.Router()
 const vendingDataProvider = new MockVendingProvider()
 const supportedPaymentMethods = new MyBankPaymentMethod() // If multiple methods are supported, the chain of responsibility pattern shall be used.
 oa.post("/", async (req, res) => {
+    console.log("POST DRINKS", req.body)
+
     // User will be POSTing the refcode, and payment method. We will get the data from the vending data provider (abstracted, replaceable)
     const {refcode, paymentDetails} = req.body
     const {owner, cardNumber, cvv, expDate, bankCode} = paymentDetails
@@ -102,11 +106,14 @@ oa.post("/", async (req, res) => {
         const redeemCode = sendOrder({refcode, slot})
         const time = new Date().getTime() / 1000
         const order = new Order({
-            refcode, name, price: vendingItem.price, redeemCode, time, slot, user: user._id
+            refcode, name: vendingItem.name, price: vendingItem.price, redeemCode, time, slot, user: user._id, orders: []
         })
-        const savedOrder = order.save()
+        const savedOrder = await order.save()
         user.orders = user.orders.concat(savedOrder._id)
         await user.save()
+        res.status(201).json(
+            { redeemCode, time }
+        )
     } else {
         return res.status(400).json({error: "Payment failure", errphrase: "pay-4"})
 
@@ -114,8 +121,9 @@ oa.post("/", async (req, res) => {
 
 })
 
+
 app.use("/users", ua)
-app.use("/order", oa)
+app.use("/drinks", oa)
 
 const PORT = 6788
 app.listen(PORT, () => {
