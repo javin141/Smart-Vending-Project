@@ -2,8 +2,8 @@
 import {VendingItem} from "./objs/VendingItem";
 import {CardDetails, getBearer} from "./auth.ts";
 import {errPhraseToMsg, ErrResult} from "./objs/ErrResult.ts";
-
-const ROOT_BACKEND = "http://localhost:6788/"
+import {ROOT_BACKEND} from "./utils.ts";
+//todo change to svc
 export async function getItems(): Promise<VendingItem[]|null> {
 
 
@@ -40,10 +40,13 @@ export async function payFor(item: VendingItem, cardDetails: CardDetails): Promi
     const bearer = getBearer()
 
     const result = await fetch(url, {
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            Authorization: bearer
+        },
         method: "POST",
-        cache: "no-cache",
-        body: JSON.stringify(body),
-        headers: {Authorization: bearer}
+        body: JSON.stringify(body)
     })
 
     if (result.ok) {
@@ -51,7 +54,9 @@ export async function payFor(item: VendingItem, cardDetails: CardDetails): Promi
         return redemtionDetails
     } else {
         const err = await result.json() as ErrResult
+
         const errHrMsg = errPhraseToMsg(err.errphrase, err.error || "Error!")
+        console.log(err, errHrMsg)
         throw new Error(errHrMsg)
     }
 }
