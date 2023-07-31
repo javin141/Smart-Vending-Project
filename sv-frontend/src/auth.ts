@@ -1,5 +1,7 @@
 import {getCookie, setCookie} from "./utils";
 import {errPhraseToMsg, ErrResult} from "./objs/ErrResult.ts";
+import {store} from "./main.tsx";
+import {setLoggedIn} from "./login_reducers.ts";
 
 export function getLogin(): string|boolean {
     const cookie = getCookie("SESSION")
@@ -46,8 +48,7 @@ export async function login(username: string, password: string, failureMsg: stri
 
     if (result.ok) {
         const {token, name} = (await result.json())
-        setCookie("SESSION", token)
-        setCookie("NAME", name)
+        store.dispatch(setLoggedIn(token))
         return {
             success: true,
             token
@@ -85,8 +86,7 @@ export async function signup(name: string, username: string, password: string, f
 
     if (result.ok) {
         const token = (await result.json()).token
-        setCookie("SESSION", token)
-        setCookie("USER_DISPLAYNAME", name)
+        store.dispatch(setLoggedIn(token))
         return {
             success: true,
             token
