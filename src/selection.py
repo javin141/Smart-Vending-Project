@@ -4,17 +4,22 @@ from threading import Thread
 from hal import hal_lcd as LCD
 from payment2 import pay
 selection = []
-final_choice = 0 #set as global variable
+# final_choice = 0 #set as global variable
 
 def key_press(key):
-    global selection, lcd, final_choice
+    global selection, lcd
+    final_choice = "not set"
 #    lcd.lcd_clear()
     if key != "#":
         selection.append(key)
         print(selection)
     else: 
-        final_choice =''.join(map(str,selection))
+        final_choice = ''.join(map(str,selection))
         selection = []
+        print(final_choice)
+        pay(int(final_choice))
+
+
     print(selection, final_choice)
 
 def main():
@@ -26,8 +31,7 @@ def main():
     print(selection)
 
     keypad.init(key_press)
-    if final_choice != 0: 
-       pay(final_choice)
+
 
     
 
