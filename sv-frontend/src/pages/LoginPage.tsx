@@ -1,8 +1,6 @@
-import {Box, Button, FormControl, Snackbar, TextField, ToggleButton, ToggleButtonGroup} from "@mui/material";
-import {Form} from "react-router-dom";
-import {createRef, useRef, useState} from "react";
-import {useNavigate} from "react-router-dom"
-import {setCookie} from "../utils";
+import {Button, Snackbar, TextField, ToggleButton, ToggleButtonGroup} from "@mui/material";
+import {useNavigate} from "react-router-dom";
+import {useState} from "react";
 import {login, LoginResult, signup} from "../auth";
 
 enum Login {
