@@ -1,11 +1,12 @@
-!#/bin/sh
+#!/bin/sh
 
 echo "Current in idle state, awaiting user command..."
 
 while read command_state
 do
     case $command_state in
-        startup)    echo "entering startup"     
+        startup)    echo "entering startup"
+                    python3 src/launch.py -l selection
         while read startup_text
         do
             case $startup_text in
