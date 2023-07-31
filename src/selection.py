@@ -1,7 +1,8 @@
+#!/usr/bin/python
 from hal import hal_keypad as keypad
 from threading import Thread
 from hal import hal_lcd as LCD
-
+from payment2 import pay
 selection = []
 final_choice = 0 #set as global variable
 
@@ -25,9 +26,13 @@ def main():
     print(selection)
 
     keypad.init(key_press)
-    if final_choice != 0: print("UPDATING DB")
+    if final_choice != 0: 
+       pay(final_choice)
 
     
+
+
+
     keypad_thread = Thread(target=keypad.get_key)
     keypad_thread.start()
 
