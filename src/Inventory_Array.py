@@ -16,16 +16,16 @@ if not os.path.exists(DB_FILENAME):
         )""")
 
     Initial_stock = [
-                        ('0001','Coca-cola','1.5','1,2,3,4,5,6'),
-                        ('0002','Sprite','1.7','7,8,9,10,11'),
-                        ('0003','A&W','1.8','12,13,14,15,16,17'),
-                        ('0004','Fanta_Grape','1.2','18,19,20,21,22,23'),
-                        ('0005','Ice_Lemon_Tea','1.8','24,25,26,27,28,29,30'),
-                        ('0006','Coke_Zero','1.7','31,32,33,34,35,36,37,38'),
-                        ('0007','7-up','1.4','39,40,41,42,43,44,45')
+                        ('0001','Coca-cola','1.5','1,2,3,4,5,6','3,2,6,4,7,6'),
+                        ('0002','Sprite','1.7','7,8,9,10,11','2,5,3,5,6'),
+                        ('0003','A&W','1.8','12,13,14,15,16,17','3,2,5,4,2,3,'),
+                        ('0004','Fanta_Grape','1.2','18,19,20,21,22,23','2,5,4,3,2,5'),
+                        ('0005','Ice_Lemon_Tea','1.8','24,25,26,27,28,29,30','3,2,6,4,3,5,7'),
+                        ('0006','Coke_Zero','1.7','31,32,33,34,35,36,37,38''3,5,2,6,3,4,5,2'),
+                        ('0007','7-up','1.4','39,40,41,42,43,44,45','6,6,7,4,3,2,6')
     ]
 
-    c.executemany("INSERT INTO Vending Values (?,?,?,?)", Initial_stock)
+    c.executemany("INSERT INTO Vending Values (?,?,?,?,?)", Initial_stock)
 
 
     conn.commit()
@@ -52,8 +52,11 @@ def get_item(refcode: int) -> dict:
 
     slots = deserialise_ints(results[3])
     items["slots"] = slots
+    
+    stock = deserialise_ints(results[4])
+    items["stock"] = stock
     return items
-
+    
 
 def update_item(refcode: int, new_item: dict):
     cu = conn.cursor()
