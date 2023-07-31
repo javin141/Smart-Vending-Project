@@ -1,19 +1,26 @@
-export function setCookie(key, value) {
+export function setCookie(key: string, value: string) {
     // TODO: extra feature: session cookie expiry
-    document.cookie = key + "=" + value +
-        ";path=/";
+    window.localStorage.setItem(key, value)
 }
 
-export function getCookie(key: string): string|undefined {
-    const cookies: string[] = document.cookie.split(";")
-    for (let cookie of cookies) {
-        let ck: string = cookie.trim()
-        if (ck.startsWith(`${key}=`)) {
-            return ck.substring(key.length + 1)
-        }
-    }
+export function getCookie(key: string): string|null {
+    console.log("Cookie ", key, window.localStorage.getItem(key))
+    return window.localStorage.getItem(key)
+}
 
-    return undefined
+export function removeCookie(key: string) {
+    window.localStorage.removeItem(key)
+}
 
 
+export function removeLogin() {
+    removeCookie("SESSION")
+    removeCookie("NAME")
+}
+
+export const ROOT_BACKEND = "http://localhost:6788"
+
+
+export function getUnixTime(): number {
+    return Date.now() / 1000
 }
