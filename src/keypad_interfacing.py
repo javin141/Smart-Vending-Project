@@ -15,7 +15,7 @@ def interrupt_all():
 
 def callback(key):
     for listener in listeners:
-        listener()
+        listener(key)
 
 hal_key_l.init(callback)
 thread = Thread(target=hal_key_l.get_key)

@@ -4,11 +4,12 @@ from abc import ABC, abstractmethod
 import time
 from threading import Thread
 
-from hal import hal_lcd, hal_keypad, hal_rfid_reader, hal_key_l
+from hal import hal_lcd, hal_keypad, hal_rfid_reader, hal_keypad_neo
 from typing import Callable
 
 from Inventory_Array import get_item, choose_slot, update_item
 from dispense import dispense_drink
+from hal import hal_key_l
 
 lcd = hal_lcd.lcd()
 # keypad = hal_keypad.HALKeypad()
