@@ -1,3 +1,5 @@
+from threading import Thread
+
 from hal import hal_key_l
 
 listeners = []
@@ -16,3 +18,6 @@ def callback(key):
         listener()
 
 hal_key_l.init(callback)
+thread = Thread(target=hal_key_l.get_key)
+# Main thread for keypad interfacing
+thread.start()
