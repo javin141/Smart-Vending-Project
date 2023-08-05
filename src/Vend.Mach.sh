@@ -1,18 +1,25 @@
 #!/bin/bash
 
+echo "Current in idle state, awaiting user command..."
 
 while read -r command_state
 do
-    echo "Current in idle state, awaiting user command..."
     case $command_state in
         startup) echo "entering startup"
-                    running=true  
+                    running=true
+                    status=0
         while [ "$running" = "true" ]; do
-            status="$(cat /etc/smartvending/status)"
+           echo $status
+
             if [ "$status" == 0 ]
             then
                 echo "Running..."
                 python3 launch.py -l selection
+            elif [ "$status" == 1 ]
+            then
+                echo "ERROR! Exit with status 1"
+                echo "Restarting with status 0..."
+
             elif [ "$status" == 8 ]
             then 
                 echo "Exit code 1, Restarting"
@@ -54,6 +61,8 @@ do
             done;;
         *)  exit ;;
         esac
+    echo "Current in idle state, awaiting user command..."
+
 done
 
 
