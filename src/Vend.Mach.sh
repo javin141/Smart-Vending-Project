@@ -22,20 +22,22 @@ do
 
             elif [ "$status" == 8 ]
             then 
-                echo "Exit code 1, Restarting"
+                echo "Exit code 8, Restarting"
                 python3 launch.py -l selection
             elif [ "$status" == 9 ]
             then
-                echo "Exit code 2, Returning to main script"
+                echo "Exit code 9, Returning to main script"
                 echo "input startup to restart payment.py"
                 running = false
 
             elif [ "$status" == 10 ]
             then
-                echo "Exit code 3, launching burglar program"
+                echo "Exit code 10, launching burglar program"
                 echo "Exit again with status 8 to return to vending program"
                 python3 launch.py -l burglar
             fi
+
+            status=$?
 
             done  ;;
 #       while read startup_text
@@ -47,6 +49,7 @@ do
 #       esac
 #       done;; ' 
 #       ignore this and remind tao to remove this before merging to main 🐋
+
         config)     echo "entering config"      
         while read -r config_text
         do
