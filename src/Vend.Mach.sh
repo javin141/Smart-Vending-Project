@@ -1,26 +1,35 @@
 #!/bin/bash
 
-echo "Current in idle state, awaiting user command..."
 
 while read -r command_state
 do
+    echo "Current in idle state, awaiting user command..."
     case $command_state in
         startup) echo "entering startup"
                     running=true  
         while [ "$running" = "true" ]; do
-            status="$(cat /etc/deeznuts/statusfile)"   # lucius go edit this file for the exit code you want
+            status="$(cat /etc/smartvending/status)"
             if [ "$status" == 0 ]
             then
                 echo "Running..."
-            elif [ "$status" == 1 ]
+                python3 launch.py -l selection
+            elif [ "$status" == 8 ]
             then 
                 echo "Exit code 1, Restarting"
-                python selection.py
-            elif [ "$running" = "false" ]
+                python3 launch.py -l selection
+            elif [ "$status" == 9 ]
             then
                 echo "Exit code 2, Returning to main script"
                 echo "input startup to restart payment.py"
+                running = false
+
+            elif [ "$status" == 10 ]
+            then
+                echo "Exit code 3, launching burglar program"
+                echo "Exit again with status 8 to return to vending program"
+                python3 launch.py -l burglar
             fi
+
             done  ;;
 #       while read startup_text
 #       do
@@ -45,6 +54,6 @@ do
             done;;
         *)  exit ;;
         esac
-            done
+done
 
 
