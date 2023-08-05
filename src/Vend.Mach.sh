@@ -1,7 +1,6 @@
 #!/bin/bash
-
-echo "Current in idle state, awaiting user command..."
-
+echo "Running..."
+python selection.py
 while read -r command_state
 do
     case $command_state in
@@ -19,7 +18,7 @@ do
             elif [ "$running" = "false" ]
             then
                 echo "Exit code 2, Returning to main script"
-                echo "input startup to restart payment.py"
+                echo "input startup to restart selection.py"
             fi
             done  ;;
 #       while read startup_text
