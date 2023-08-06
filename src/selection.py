@@ -1,6 +1,4 @@
 #!/usr/bin/python
-from hal import hal_keypad as keypad
-from threading import Thread
 from hal import hal_lcd as LCD
 from payment2 import pay
 from keypad_interfacing import register_listener, stop_listening
@@ -22,18 +20,19 @@ def key_press(key):
         print(final_choice)
         stop_listening(key_press)  # Remove the listener when "#" is pressed
         pay(int(final_choice))
+        main(init=False)  # Continue in another thread.
 
     print(selection, final_choice)
 
-def main():
+def main(init=True):
     global lcd
-    lcd = LCD.lcd()
-    lcd.lcd_clear()
+    if init:
+        lcd = LCD.lcd()
+        lcd.lcd_clear()
 
     lcd.lcd_display_string("Please select")
     print(selection)
 
-    keypad.init(key_press)
     register_listener(key_press)  # Use a lambda function to pass the 'key' argument
 
 if __name__ == "__main__":
