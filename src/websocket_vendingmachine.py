@@ -3,7 +3,6 @@ import websockets
 import json
 import time
 
-# Import your existing functions for inventory handling
 from Inventory_Array import get_item, update_item, choose_slot
 
 async def handle_order(websocket, path):
