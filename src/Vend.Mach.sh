@@ -1,7 +1,6 @@
 #!/bin/bash
-
-echo "Current in idle state, awaiting user command..."
-
+echo "Running..."
+python selection.py
 while read -r command_state
 do
     case $command_state in
@@ -37,7 +36,7 @@ do
                 python3 launch.py -l burglar
             fi
 
-            status=$?
+            status="$(cat /etc/deeznuts/statusfile)"
 
             done  ;;
 #       while read startup_text
