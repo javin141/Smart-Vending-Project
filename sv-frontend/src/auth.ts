@@ -1,4 +1,4 @@
-import {getCookie, setCookie} from "./utils";
+import {getCookie} from "./utils";
 import {errPhraseToMsg, ErrResult} from "./objs/ErrResult.ts";
 import {store} from "./main.tsx";
 import {setLoggedIn} from "./login_reducers.ts";
@@ -22,6 +22,8 @@ export interface CardDetails {
     cvv: number
     bankCode: string
 }
+
+// interface TokenDetails
 
 export function getBearer() {
     return `Bearer ${getCookie("SESSION") ?? ""}`
@@ -47,7 +49,7 @@ export async function login(username: string, password: string, failureMsg: stri
     })
 
     if (result.ok) {
-        const {token, name} = (await result.json())
+        const {token} = (await result.json()) as {token: string}
         store.dispatch(setLoggedIn(token))
         return {
             success: true,
@@ -67,6 +69,7 @@ export async function login(username: string, password: string, failureMsg: stri
 
 
 export async function signup(name: string, username: string, password: string, failureMsg: string): Promise<LoginResult> {
+    console.log("username")
     const data = {
         name,
         username,
@@ -85,7 +88,7 @@ export async function signup(name: string, username: string, password: string, f
     })
 
     if (result.ok) {
-        const token = (await result.json()).token
+        const {token} = (await result.json()) as {token: string}
         store.dispatch(setLoggedIn(token))
         return {
             success: true,
