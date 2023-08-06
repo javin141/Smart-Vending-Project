@@ -2,7 +2,7 @@ import {Button, Grid} from "@mui/material";
 import {Link} from "react-router-dom";
 import {useEffect, useState} from "react";
 import {VendingItem} from "../objs/VendingItem";
-import {getItems} from "../vending";
+import {getItems} from "../services/vending.ts";
 import {Item} from "../components/VendingItem";
 import {useSelector} from "react-redux";
 

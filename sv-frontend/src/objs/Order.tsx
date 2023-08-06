@@ -1,7 +1,7 @@
 import {Card, CardActionArea, CardContent} from "@mui/material";
-import {Order} from "../orders.ts";
+import {Order} from "../services/orders.ts";
 import {useEffect, useState} from "react";
-import {getUnixTime} from "../utils.ts";
+import {getUnixTime} from "../services/utils.ts";
 
 interface OrderProp {
     order: Order

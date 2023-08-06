@@ -1,7 +1,7 @@
 import {Button, Snackbar, TextField, ToggleButton, ToggleButtonGroup} from "@mui/material";
 import {useNavigate} from "react-router-dom";
 import {useState} from "react";
-import {login, LoginResult, signup} from "../auth";
+import {login, LoginResult, signup} from "../services/auth.ts";
 
 enum Login {
     LOGIN, SIGNUP
@@ -98,7 +98,7 @@ const LoginPage = () => {
 
     const [login, setLogin] = useState<Login>(Login.LOGIN)
 
-    // TODO: This triggers PW manager regardless of login fail or pass. We need to trigger only on login pass.
+    // NOTE: This triggers PW manager regardless of login fail or pass. We need to trigger only on login pass.
 
 
 

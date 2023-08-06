@@ -1,5 +1,5 @@
 export function setCookie(key: string, value: string) {
-    // TODO: extra feature: session cookie expiry
+    // extra feature: session cookie expiry
     window.localStorage.setItem(key, value)
 }
 

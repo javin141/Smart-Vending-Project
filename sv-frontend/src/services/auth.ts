@@ -1,7 +1,7 @@
-import {getCookie} from "./utils";
-import {errPhraseToMsg, ErrResult} from "./objs/ErrResult.ts";
-import {store} from "./main.tsx";
-import {setLoggedIn} from "./login_reducers.ts";
+import {getCookie} from "./utils.ts";
+import {errPhraseToMsg, ErrResult} from "../objs/ErrResult.ts";
+import {store} from "../main.tsx";
+import {setLoggedIn} from "../login_reducers.ts";
 
 export function getLogin(): string|boolean {
     const cookie = getCookie("SESSION")

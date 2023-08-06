@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import {getOrders, Order} from "../orders.ts";
+import {getOrders, Order} from "../services/orders.ts";
 import QRCode from 'react-qr-code';
 import {
     Button,
