@@ -6,7 +6,8 @@ import {setLoggedIn} from "../login_reducers.ts";
 const MyAppBar = () => {
     const navigate = useNavigate()
     const dispatch = useDispatch()
-    const login: string = useSelector(state => state.login.login)
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-return
+    const login: string = useSelector((state: {login: {login: string}}) => state.login.login)
     function logout() {
         dispatch(setLoggedIn(null))
         navigate("/")

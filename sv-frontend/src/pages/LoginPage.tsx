@@ -11,14 +11,13 @@ enum Login {
 const LoginForm = () => {
     const navigate = useNavigate()
 
-    const [errMsg, setErrMsg] = useState<string>(null)
-    const [user, setUser] = useState()
-    const [pw, setPw] = useState()
+    const [errMsg, setErrMsg] = useState<string|null>(null)
+    const [user, setUser] = useState("")
+    const [pw, setPw] = useState("")
 
 
-    async function loginCallback(event) {
+    async function loginCallback(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault()
-
         const loginResult: LoginResult = await login(user, pw, "Login failed")
 
 
@@ -33,7 +32,7 @@ const LoginForm = () => {
 
 
     return (
-        <form style={{display: "flex", flexDirection: "column"}} name="login-form" onSubmit={loginCallback}>
+        <form style={{display: "flex", flexDirection: "column"}} name="login-form" onSubmit={void loginCallback}>
             <Snackbar open={!!errMsg}
                       autoHideDuration={6000}
                       message={errMsg}
@@ -55,17 +54,13 @@ const SignupForm = ( ) => {
     const navigate = useNavigate()
     const [signUser, setSignUser] = useState("")
     const [signPw, setSignPw] = useState("")
-    const [signName, setSignName] = useState()
-    const [errMsg, setErrMsg] = useState<string>(null)
+    const [signName, setSignName] = useState<string>("")
+    const [errMsg, setErrMsg] = useState<string|null>(null)
 
-    async function signupCallback(event) {
+    async function signupCallback(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault()
-        const data = {
-            username: signUser,
-            password: signPw,
-            name: signName
-        }
-        const signupResult: LoginResult = await signup(signUser, signPw, signName, "Signup failed")
+        console.log("Sign up", signUser)
+        const signupResult: LoginResult = await signup(signName, signUser, signPw, "Signup failed")
         if (signupResult.success) {
             setErrMsg("Signup successful")
             navigate("/")
@@ -76,14 +71,14 @@ const SignupForm = ( ) => {
 
 
     return (
-        <form style={{display: "flex", flexDirection: "column"}} name="login-form" onSubmit={signupCallback}>
+        <form style={{display: "flex", flexDirection: "column"}} name="login-form" onSubmit={void signupCallback}>
             <Snackbar open={!!errMsg}
                       autoHideDuration={6000}
                       message={errMsg}
                       onClose={() => setErrMsg(null)}/>
             <h2 style={{textAlign: "center"}}>Signup to SmartVending</h2>
 
-            <TextField required variant="filled" value={signName} onChange={(event) => setSignName(event.target.value)}
+            <TextField required variant="filled" value={signName} onChange={(event) => {setSignName(event.target.value)}}
                        label="Name" style={{margin: "8px"}} type="text" ></TextField>
 
             <TextField required variant="filled" value={signUser} onChange={(event) => setSignUser(event.target.value)}
@@ -107,7 +102,7 @@ const LoginPage = () => {
 
 
 
-    function handleSwitchState(event: React.MouseEvent<HTMLElement>, newState: Login | null) {
+    function handleSwitchState(_: React.MouseEvent<HTMLElement>, newState: Login | null) {
         setLogin(newState ?? Login.LOGIN)
     }
 

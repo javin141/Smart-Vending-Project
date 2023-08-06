@@ -1,12 +1,10 @@
 import {Button, Grid} from "@mui/material";
 import {Link} from "react-router-dom";
-import {getLogin} from "../auth";
-import {useEffect, useMemo, useState} from "react";
+import {useEffect, useState} from "react";
 import {VendingItem} from "../objs/VendingItem";
 import {getItems} from "../vending";
 import {Item} from "../components/VendingItem";
 import {useSelector} from "react-redux";
-import {LoginState} from "../login_reducers.ts";
 
 const Onboarding = () => {
     return <div style={{display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center"}}>
@@ -34,7 +32,7 @@ const Shop = () => {
         }
         async function load() {
             if (!active) { return }
-            setVending(await getItems())
+            setVending(await getItems() ?? [])
             setTimeout(async () => {
                 active = true
                 await load()
@@ -45,8 +43,8 @@ const Shop = () => {
     }, [])
     return (
         <>
-            <h2 align="center">Select a drink from our wide variety below:</h2>
-        <Grid container style={{margin: 16, justifyContent:"center"}} align="center" >
+            <h2 {...{align:"center"}}>Select a drink from our wide variety below:</h2>
+        <Grid container style={{margin: 16, justifyContent:"center"}} >
             {vendingItems?.map((item) => {
                 return <Item vendingItem={item}/>
             })}
@@ -59,7 +57,7 @@ const Shop = () => {
 
 
 const Homepage = () => {
-    const loggedIn = useSelector((state) => (state as JSON).login.login)
+    const loggedIn = useSelector((state: {login: {login: string}}) => state.login.login)
     console.log("Logged in", loggedIn)
     return (
         <div style={{display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", marginLeft: "auto", marginRight: "auto"}}>
