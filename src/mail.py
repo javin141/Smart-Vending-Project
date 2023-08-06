@@ -2,7 +2,7 @@ import yagmail, os
 
 email = os.getenv("MAIL_ADDR")
 pw = os.getenv("MAIL_PW")
-yag = yagmail.SMTP(email, pw)
+yag = yagmail.SMTP(email, pw, host="smtppro.zoho.com", port=465)
 
 
 def send_mail(to: str, subject: str, message_list: list):
