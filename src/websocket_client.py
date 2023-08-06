@@ -5,7 +5,7 @@ import time
 
 from Inventory_Array import get_item, update_item, choose_slot
 
-async def handle_order(websocket, path):
+async def handle_order(websocket):
     async for message in websocket:
         data = json.loads(message)
         endpoint = data.get('endpoint')
@@ -39,13 +39,14 @@ async def handle_order(websocket, path):
 
         await websocket.send(json.dumps(response))
 
-async def start_websocket_server():
-    server_address = '0.0.0.0'  # Listen on all available network interfaces
-    server_port = 8765  # Change to desired port
+async def start_websocket_client():
+    server_address = 'your_website_address'  # Change to website's WebSocket server address
+    server_port = 8765  # Change to website's WebSocket server port
 
-    async with websockets.serve(handle_order, server_address, server_port):
-        print(f'WebSocket server running at ws://{server_address}:{server_port}')
+    async with websockets.connect(f'ws://{server_address}:{server_port}') as websocket:
+        print(f'WebSocket client connected to ws://{server_address}:{server_port}')
+        await handle_order(websocket)
 
-# Start the WebSocket server
-asyncio.get_event_loop().run_until_complete(start_websocket_server())
+# Start the WebSocket client
+asyncio.get_event_loop().run_until_complete(start_websocket_client())
 asyncio.get_event_loop().run_forever()
