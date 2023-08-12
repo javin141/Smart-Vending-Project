@@ -1,3 +1,10 @@
+import os
+path = os.path.expanduser('~/.yagmail')
+if not os.path.isfile(path):
+    print("YAGMAIL FILE NOT FOUND!")
+    # print(os.path.abspath("/home/pi/.yagmail"))
+    open(path, "w").write("")
+
 import yagmail, os
 
 email = os.getenv("MAIL_ADDR")
