@@ -19,8 +19,9 @@ def dispense_drink(refcode):
         set_servo_position(90)
 
         # Display "Currently dispensing [Drink Name]"
+        lcd_dispenser.lcd_clear()
         lcd_dispenser.lcd_display_string("Dispensing", 1)
-        lcd_dispenser.lcd_display_string(item["name"], 2)
+        lcd_dispenser.lcd_display_string(f"{item['name']} [{item['refcode']}]", 2)
 
         # Wait for 10 seconds
         time.sleep(2)
@@ -33,7 +34,7 @@ def dispense_drink(refcode):
         lcd_dispenser.lcd_display_string("Complete!", 1)
 
         # Wait for another 10 seconds
-        time.sleep(10)
+        time.sleep(4)
 
         # Clear the display
         lcd_dispenser.lcd_clear()
