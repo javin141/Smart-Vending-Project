@@ -54,17 +54,15 @@ The SmartVending project utilizes a combination of Python for the main vending m
 #### WebSocket Details
 The communication flow involves the Raspberry Pi (acting as the client) sending pings to the WebSocket server (the website), which responds with order notifications or updates to the stock. The website also initiates stock checks and allows users to place orders.
 
-Endpoint: 'checkstock'
+- Endpoint: 'checkstock'
+  Request: {"endpoint": "checkstock", "refcode": <item_refcode>}
+  Response: {"refcode": <item_refcode>, "name": <item_name>, "price": <item_price>, "stock": <item_stock_list>, "slots": <item_slot_list>}
+  - This endpoint checks item availability using its reference code, providing details about the item, including name, price, stock, and available slots.
 
-Request: {"endpoint": "checkstock", "refcode": <item_refcode>}
-Response: {"refcode": <item_refcode>, "name": <item_name>, "price": <item_price>, "stock": <item_stock_list>, "slots": <item_slot_list>}
-This endpoint checks item availability using its reference code, providing details about the item, including name, price, stock, and available slots.
-
-Endpoint: 'placeorder'
-
-Request: {"endpoint": "placeorder", "refcode": <item_refcode>}
-Response: {"reservation_code": <generated_redemption_code>} or {"message": "No slots available for the chosen item."} (if no slot is available for the item)
-This endpoint lets users place orders for items, generating a reservation code upon success or indicating unavailability if no slots are available.
+- Endpoint: 'placeorder'
+  Request: {"endpoint": "placeorder", "refcode": <item_refcode>}
+  Response: {"reservation_code": <generated_redemption_code>} or {"message": "No slots available for the chosen item."} (if no slot is available for the item)
+  - This endpoint lets users place orders for items, generating a reservation code upon success or indicating unavailability if no slots are available.
 
 ### Raspberry Pi Thread Allocation
 - Thread 1: Core Vending Machine Logic
