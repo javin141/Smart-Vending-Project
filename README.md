@@ -46,11 +46,65 @@ Directories are denoted with a trailing slash
 - sv-backend (backend in ExpressJS, interfacing with MongoDB on MongoDB Atlas)
 - sv-frontend (frontend in ReactTS, single page application)
 
-
+### Software Details
 The software architecture of this project is described below.
 
-### Physical
+The SmartVending project utilizes a combination of Python for the main vending machine program on the Raspberry Pi, Shell Script to launch and restart the Python programs, and JavaScript/TypeScript for the web-based interface, acting as a WebSocket server. This setup allows seamless communication between the vending machine and the website, enabling real-time updates and order handling.
 
+#### WebSocket Details
+The communication flow involves the Raspberry Pi (acting as the client) sending pings to the WebSocket server (the website), which responds with order notifications or updates to the stock. The website also initiates stock checks and allows users to place orders.
+
+Endpoint: 'checkstock'
+
+Request: {"endpoint": "checkstock", "refcode": <item_refcode>}
+Response: {"refcode": <item_refcode>, "name": <item_name>, "price": <item_price>, "stock": <item_stock_list>, "slots": <item_slot_list>}
+This endpoint checks item availability using its reference code, providing details about the item, including name, price, stock, and available slots.
+
+Endpoint: 'placeorder'
+
+Request: {"endpoint": "placeorder", "refcode": <item_refcode>}
+Response: {"reservation_code": <generated_redemption_code>} or {"message": "No slots available for the chosen item."} (if no slot is available for the item)
+This endpoint lets users place orders for items, generating a reservation code upon success or indicating unavailability if no slots are available.
+
+### Raspberry Pi Thread Allocation
+- Thread 1: Core Vending Machine Logic
+- Thread 2: User Input Handling (Keypad)
+- Thread 3: Web Interface Communication (WebSocket Client)
+- Thread 4: Security and Monitoring (Break-in Detection)
+
+### Physical and Hardware
 - The entry point of the program is at `src/MachV2.sh` on the Raspberry Pi.
   - It is a shell script which launches the corresponding features via `src/launch.py`.
+ 
+- 16x2 LCD Display
+  - Provides a clear and concise interface for users, showing item details, prices, and status messages, enhancing the user experience.
+
+- Buzzer
+  - Plays a vital role in alerting users about signaling successful transactions, and notifying users of break-ins.
+
+- Keypad
+  - Enables users to input selection details for physical orders, also serves as an access authorisation mechanism for authorized personnel, such as engineers.
+
+- Camera
+  - Utilized for scanning QR codes during online order collection. In case of any break-in attempts the camera captures images, providing valuable evidence.
+
+- Potentiometer
+  - Functions as a burglar detection sensor, detecting unauthorized access when the vending machine's door is opened without authorization.
+
+- Servo
+  - Acts as dispensing mechanism, the servo ensures precise and controlled delivery of items to users.
+
+- RFID Reader
+  - Enables secure payment transactions through RFID cards.
+
+### Additional Features
+- Alarm System for Break-ins.
+  - In the event of a break-in, an alarm is triggered, sounding an alert and drawing attention to the unauthorized access attempt
+
+- Email Alerts for Break-ins.
+  - If someone attempts to force open the vending machine's door, an alert is sent via email to the designated engineer, accompanied by an image captured by the camera for evidence.
+
+- Engineer access for maintenance purposes.
+  - Engineers can access the vending machine using a designated code to restock or maintain the vending machine without trigerring the alarm. It can also be used to disable the alarm after a break-in.
+
 
