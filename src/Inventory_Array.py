@@ -1,4 +1,5 @@
 import sqlite3, os
+import time
 from typing import Optional
 # from json import dumps, loads
 import json
@@ -27,14 +28,14 @@ if not pathexist:
     # {redeem: string, timestamp: string, slot: int}[]
 
     Initial_stock = [
-                        ('0001','Coca-cola','1.5','1,2,3,4,5,6','3,2,6,4,7,6', "[]"),
-                        ('0002','Sprite','1.7','7,8,9,10,11','2,5,3,5,6', "[]"),
-                        ('0003','A&W','1.8','12,13,14,15,16,17','3,2,5,4,2,3,', "[]"),
-                        ('0004','Fanta_Grape','1.2','18,19,20,21,22,23','2,5,4,3,2,5', "[]"),
-                        ('0005','Ice_Lemon_Tea','1.8','24,25,26,27,28,29,30','3,2,6,4,3,5,7',"[]"),
-                        ('0006','Coke_Zero','1.7','31,32,33,34,35,36,37,38','3,5,2,6,3,4,5,2',"[]"),
-                        ('0007','7-up','1.4','39,40,41,42,43,44,45','6,6,7,4,3,2,6',"[]"),
-                        ("0008", "Water", "0.9", "46,47", "1,1", "[]")
+                        ('1','Coca-cola','1.5','1,2,3,4,5,6','3,2,6,4,7,6', "[]"),
+                        ('2','Sprite','1.7','7,8,9,10,11','2,5,3,5,6', "[]"),
+                        ('3','A&W','1.8','12,13,14,15,16,17','3,2,5,4,2,3,', "[]"),
+                        ('4','Fanta_Grape','1.2','18,19,20,21,22,23','2,5,4,3,2,5', "[]"),
+                        ('5','Ice_Lemon_Tea','1.8','24,25,26,27,28,29,30','3,2,6,4,3,5,7',"[]"),
+                        ('6','Coke_Zero','1.7','31,32,33,34,35,36,37,38','3,5,2,6,3,4,5,2',"[]"),
+                        ('7','7-up','1.4','39,40,41,42,43,44,45','6,6,7,4,3,2,6',"[]"),
+                        ("8", "Water", "0.9", "46,47", "1,1", "[]")
     ]
 
     c.executemany("INSERT INTO Vending Values(?,?,?,?,?,?)", Initial_stock)
@@ -46,6 +47,12 @@ if not pathexist:
 c.execute("Select * FROM Vending")
 print(c.fetchall())
 print("Successful execution")
+
+
+def get_all_not_deserialised() -> list:
+    c.execute("Select * FROM Vending")
+    results = c.fetchall()
+    return results
 
 
 def get_item(refcode: int) -> Optional[dict]:
@@ -92,16 +99,19 @@ def get_item(refcode: int) -> Optional[dict]:
         else:
             raise Exception("redeemcode is not a list!")
         #
-        #     for redeemcode in redeemcodes:
-        #         # {redeem: string, timestamp: string}
-        #         redeem = redeemcode["redeem"]
-        #         timestamp = redeemcode["timestamp"]
-        #         time_int = int(timestamp)
-        #         curr_time = int(time.time())
-        #         diff = curr_time - time_int
-        #         if diff < 86400:
-        #             # less than 24 h
-        #             stock
+        for redeemcode in redeemcodes:
+            # {redeem: string, timestamp: string}
+            slot = redeemcode["slot"]
+            timestamp = redeemcode["timestamp"]
+            time_int = int(timestamp)
+            curr_time = int(time.time())
+            diff = curr_time - time_int
+            if diff < 86400:
+                # less than 24 h
+                try:
+                    stock[slots.index(slot)] -= 1
+                except ValueError:
+                    continue # just ignore this and leave it as it is.
 
 
     except Exception as e:
@@ -117,7 +127,7 @@ def update_item(refcode: int, new_item: dict):
     sql = "UPDATE Vending SET "
     binding = []
     if "name" in new_item:
-        sql += "name=? , "
+        sql += "drink_name=? , "
         binding.append(new_item["name"])
 
     if "price" in new_item:
@@ -132,6 +142,10 @@ def update_item(refcode: int, new_item: dict):
         sql += "stock=? , "
         binding.append(serialise_ints(new_item["stock"]))
 
+    if "redeemcodes" in new_item:
+        sql += "redeemcodes=?, "
+        binding.append(json.dumps(new_item["redeemcodes"]))
+
     if len(binding) == 0:
         return None
 
@@ -141,6 +155,7 @@ def update_item(refcode: int, new_item: dict):
 
     print("SQL QUERY", sql, binding)
     cu.execute(sql, binding)
+    conn.commit()
 
 
 def choose_slot(refcode: int) -> Optional[int]:
@@ -160,15 +175,20 @@ def choose_slot(refcode: int) -> Optional[int]:
             rc_slots[rc.rc.get("slot")] += 1
 
     for index in range(len(slots)):
-        usable = slots[index] - rc_slots.get(slots[index])
-        if stocks[index] != 0:
+        ru = rc_slots.get(slots[index])
+        if ru is None:
+            ru = 0
+        usable = slots[index] - ru
+        if usable != 0:
             slot = slots[index]
             break
+
     return slot
 # def add_to(refcode)
 
-"""
+
 # For debug
-while True:
-    exec(input(">>>"))
-    """
+if __name__ == "__main__":
+    while True:
+        exec(input(">>>"))
+
