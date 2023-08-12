@@ -1,11 +1,11 @@
 from threading import Thread
-
+import os
 from hal import hal_adc
 
 hal_adc.init()
 
 bypass = False
-THRESHOLD = 400  # TODO we need to calibrate this!
+THRESHOLD = 970
 POT_CHANNEL = 1  # 0 <= adc <= 1023
 
 
@@ -18,12 +18,14 @@ def toggle_bypass() -> bool:
 def antitheft_main():
     while True:
         if not bypass:
-            if hal_adc.get_adc_value(POT_CHANNEL) > THRESHOLD:
+            if hal_adc.get_adc_value(POT_CHANNEL) < THRESHOLD:
                 # Security breached.
                 # Launch burglar program (coordinated by Tao's shell script) (status code 10)
                 print("BURGLAR SYSTEM ACTIVATED")
-                exit(10)  # The entire program will intentionally exit with a status code of 10
+                open("statusfile", "w").write("10")
+                os._exit(10)
 
 
-burglar_detect = Thread(target=antitheft_main)
-burglar_detect.start()
+def launch():
+    burglar_detect = Thread(target=antitheft_main)
+    burglar_detect.start()
