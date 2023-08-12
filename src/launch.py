@@ -1,4 +1,4 @@
-import argparse
+import argparse, os
 
 
 parser = argparse.ArgumentParser()
@@ -15,6 +15,9 @@ if launch == "selection":
     selection.main()
 elif launch == "online":
     import online, antitheft_background
+    from dotenv import load_dotenv
+    load_dotenv(".env")
+    print(os.getenv("MAIL_ADDR"))
     antitheft_background.launch()
     online.main()
 elif launch == "burglar":
