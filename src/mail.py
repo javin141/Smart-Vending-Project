@@ -12,5 +12,6 @@ pw = os.getenv("MAIL_PW")
 yag = yagmail.SMTP(email, pw, host="smtppro.zoho.com", port=465)
 
 
-def send_mail(to: str, subject: str, message_list: list):
-    yag.send(to=to, subject=subject, contents=message_list)
+def send_mail(to: str, subject: str, message_list: list) -> bool:
+    mail = yag.send(to=to, subject=subject, contents=message_list)
+    return not not mail
