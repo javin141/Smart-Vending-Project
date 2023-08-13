@@ -1,4 +1,4 @@
-import {getCookie} from "./utils.ts";
+import {getCookie, ROOT_BACKEND} from "./utils.ts";
 import {errPhraseToMsg, ErrResult} from "../objs/ErrResult.ts";
 import {store} from "../main.tsx";
 import {setLoggedIn} from "../login_reducers.ts";
@@ -37,7 +37,7 @@ export async function login(username: string, password: string, failureMsg: stri
         password
     }
 
-    const result = await fetch("http://localhost:6788/users/login", {
+    const result = await fetch(`${ROOT_BACKEND}/users/login`, {
         method: "POST",
         // mode: "cors", TODO get CORS working properly when in production
         cache: "no-cache",
@@ -76,7 +76,7 @@ export async function signup(name: string, username: string, password: string, f
         password
     }
 
-    const result = await fetch("http://localhost:6788/users/signup", {
+    const result = await fetch(`${ROOT_BACKEND}/users/signup`, {
         method: "POST",
         // mode: "cors", TODO get CORS working properly when in production
         cache: "no-cache",
