@@ -6,30 +6,38 @@ const cors = require('cors')
 const User = require("./data/user");
 const bodyParser = require("body-parser");
 const {MyBankPaymentMethod} = require("./payment");
-const {MockVendingProvider, VendingDataProvider} = require("./data/vending");
+const {PiVendingProvider} = require("./data/vending");
 const Order = require("./data/order");
 const {getTokenFromReq} = require("./utils");
 const mongoose = require("mongoose");
 const {sendOrder} = require("./interfacing/pi");
+const path = require("path");
+
+
 const app = express()
 
 dotenv.config()
+console.log(process.env)
 
 mongoose.connect(process.env.MONGODB_URL)
 
 app.use(cors())
 app.use(bodyParser.json())
 
-app.get("/", (req, res) => {
-    res.send("Hello World!")
-})
-
+const frontend = express.static(path.join(__dirname, '../frontend-build')) // Only possible in production. Will fail in development.
+app.use(frontend)
 const ua = express.Router()
+
+const wss = require("./interfacing/wss")// Start WSS Server
+
 
 ua.post("/login", async (req, res) => {
     const {username, password} = req.body
 
     const user = await User.findOne({username})
+    console.log("Username", username, user)
+
+
     const pwCorrect = user ? await bcrypt.compare(password, user.passwordHash) : false
     if (!pwCorrect) {
         return res.status(403).json({error: "403 Forbidden, invalid credentials"})
@@ -47,7 +55,9 @@ ua.post("/login", async (req, res) => {
 
 ua.post("/signup", async (req, res) => {
     const {username, password, name} = req.body // Destructuring of body
-    if (await User.findOne({username})) {
+    const userQuery = await User.findOne({username})
+    console.log(userQuery, username, {username})
+    if (userQuery) {
         return res.status(400).json({error: "Username taken", errphrase: "unt-6"})
 
     }
@@ -59,6 +69,7 @@ ua.post("/signup", async (req, res) => {
     }) // Create it just like an object
 
     let theUser = await currentUser.save()
+    console.log("User saved", currentUser, username)
 
     const privKey = process.env["JWT_KEY"]
     const token = jwt.sign({
@@ -66,13 +77,13 @@ ua.post("/signup", async (req, res) => {
         id: theUser._id // For access via findById
     }, privKey)
 
-    res.status(201).json({token})
+    return res.status(201).json({token})
 })
 
 
 const oa = express.Router()
 
-const vendingDataProvider = new MockVendingProvider()
+const vendingDataProvider = new PiVendingProvider()
 const supportedPaymentMethods = new MyBankPaymentMethod() // If multiple methods are supported, the chain of responsibility pattern shall be used.
 oa.post("/", async (req, res) => {
     console.log("POST DRINKS", req.body)
@@ -90,11 +101,11 @@ oa.post("/", async (req, res) => {
         return res.status(404).json({error: "User not found!", errphrase: "jtb-3"})
     }
 
-    const slot = vendingDataProvider.findSlot(refcode)
+    const slot = await vendingDataProvider.findSlot(refcode)
     if (slot == null) {
         return res.status(404).json({error: "No available stock", errphrase: "nas-1"})
     }
-    const vendingItem = vendingDataProvider.getItem(refcode)
+    const vendingItem = await vendingDataProvider.getItem(refcode)
 
 
     if (supportedPaymentMethods.bankCode !== bankCode) {
@@ -103,14 +114,14 @@ oa.post("/", async (req, res) => {
 
     const success = supportedPaymentMethods.pay(owner, cardNumber, cvv, expDate, vendingItem.price)
     if (success) {
-        const redeemCode = sendOrder({refcode, slot})
+        const redeemCode = await vendingDataProvider.placeOrder({refcode, slot})
         const time = new Date().getTime() / 1000
         const order = new Order({
             refcode, name: vendingItem.name, price: vendingItem.price, redeemCode, time, slot, user: user._id, orders: []
         })
         const savedOrder = await order.save()
         user.orders = user.orders.concat(savedOrder._id)
-        await user.save()
+        await User.findByIdAndUpdate(user/* mongoose checks and gets id */, user, {new: true})
         res.status(201).json(
             { redeemCode, time }
         )
@@ -124,9 +135,10 @@ oa.post("/", async (req, res) => {
 
 oa.get("/", async (req, res) => {
     console.log("GET DRINKS")
-    const vendingDataProvider = new MockVendingProvider()
+    const vendingDataProvider = new PiVendingProvider()
     // There is NO NEED to authenticate as this data is not user specific nor sensitive.
-    const allItems = vendingDataProvider.getAllItems()
+    const allItems = await vendingDataProvider.getAllItems()
+    console.log("VI", allItems)
     return res.status(200).json(allItems)
 })
 
@@ -154,8 +166,17 @@ oa.get("/orders", async (req, res) => {
     return res.status(200).json(allOrders)
 })
 
+app.get("/testgetitem", async (req, res)=>{
+    const pr = new PiVendingProvider()
+
+    res.send(await pr.getItem(6) ?? "333")
+})
+
 app.use("/users", ua)
 app.use("/drinks", oa)
+app.use("/*", frontend)
+
+
 
 const PORT = 6788
 app.listen(PORT, () => {
