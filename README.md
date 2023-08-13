@@ -63,12 +63,27 @@ The communication flow involves the Raspberry Pi (acting as the client) sending 
   - Request: {"endpoint": "placeorder", "refcode": <item_refcode>}
   - Response: {"reservation_code": <generated_redemption_code>} or {"message": "No slots available for the chosen item."} (if no slot is available for the item)
   - This endpoint lets users place orders for items, generating a reservation code upon success or indicating unavailability if no slots are available.
+ 
+- Endpoint: 'getinv'
+  - Request: {"endpoint": "getinv"}
+  - Response (Example): [(1, 'Coca-cola', 1.5, '1,2,3,4,5,6', '3,2,6,4,7,6', '[]'), (2, 'Sprite', 1.7, '7,8,9,10,11', '2,5,3,5,6', '[]')]
+    - response is not deserialised and it is up to the endpoint consumer to deserialise it.
+  - This endpoint gets all items in inventory, but items are not deserialised.
+  
+- Endpoint: 'chooseslot'
+  - Request: {"endpoint": "chooseslot", "refcode": <item_refcode>}
+  - Response: {"slot": <slot>}
+  - This endpoint chooses a slot for an item.
+ 
 
 ### Raspberry Pi Thread Allocation
-- Thread 1: Core Vending Machine Logic
+- Thread 1: Core Vending Machine Logic (main, starting thread)
 - Thread 2: User Input Handling (Keypad)
 - Thread 3: Web Interface Communication (WebSocket Client)
 - Thread 4: Security and Monitoring (Break-in Detection)
+- 
+Note: after a user purchases the drink, the main selection logic is restarted on the current thread, which can be the keypad thread.
+Threads can finish execution and be will not be used afterwards.
 
 ### Physical and Hardware
 - The entry point of the program is at `src/MachV2.sh` on the Raspberry Pi.
