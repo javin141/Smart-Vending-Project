@@ -32,7 +32,7 @@ const LoginForm = () => {
 
 
     return (
-        <form style={{display: "flex", flexDirection: "column"}} name="login-form" onSubmit={void loginCallback}>
+        <form style={{display: "flex", flexDirection: "column"}} name="login-form" onSubmit={(event) => void loginCallback(event)}>
             <Snackbar open={!!errMsg}
                       autoHideDuration={6000}
                       message={errMsg}
@@ -71,7 +71,7 @@ const SignupForm = ( ) => {
 
 
     return (
-        <form style={{display: "flex", flexDirection: "column"}} name="login-form" onSubmit={void signupCallback}>
+        <form style={{display: "flex", flexDirection: "column"}} name="login-form" onSubmit={(event) => void signupCallback(event)}>
             <Snackbar open={!!errMsg}
                       autoHideDuration={6000}
                       message={errMsg}
