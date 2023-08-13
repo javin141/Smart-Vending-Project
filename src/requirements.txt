@@ -1,0 +1,6 @@
+yagmail[all]
+pyzbar
+python3-picamera2
+python-dotenv
+websockets
+RPi

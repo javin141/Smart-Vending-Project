@@ -3,13 +3,15 @@ import websockets
 import json
 import time
 
-from Inventory_Array import get_item, update_item, choose_slot
+
+from Inventory_Array import get_item, update_item, choose_slot, get_all_not_deserialised
+
 
 async def handle_order(websocket):
     async for message in websocket:
         data = json.loads(message)
         endpoint = data.get('endpoint')
-        response = {}
+        response = {"endpoint": endpoint}
 
         if endpoint == 'checkstock':
             refcode = data['refcode']
@@ -19,10 +21,12 @@ async def handle_order(websocket):
             response['price'] = item['price']
             response['stock'] = item['stock']
             response['slots'] = item['slots']
+            response["redeemcodes"] = item["redeemcodes"]
 
         elif endpoint == 'placeorder':
             refcode = data['refcode']
-            chosen_slot = choose_slot(refcode)
+            chosen_slot = data.get("slot")
+            chosen_slot = chosen_slot if chosen_slot else choose_slot(refcode)
 
             if chosen_slot is None:
                 response['message'] = 'No slots available for the chosen item.'
@@ -33,14 +37,23 @@ async def handle_order(websocket):
 
                 # Update the stock for the chosen item and slot
                 item = get_item(refcode)
-                slot_index = item['slots'].index(chosen_slot)
-                item['stock'][slot_index] -= 1
+                # {redeem: string, timestamp: string, slot: int}
+                item["redeemcodes"].append({"redeem": reservation_code, "timestamp": str(int(time.time())), "slot": chosen_slot})
                 update_item(refcode, item)
+        elif endpoint == "getinv":
+            print("Get drinks, not serialised.")
+            response["data"] =  get_all_not_deserialised()
+        elif endpoint == "chooseslot":
+            response["slot"] = choose_slot(data["refcode"])
+
+        elif endpoint == "helloworld":
+            print("Hello World!")
+            response = {"hello": "world"}
 
         await websocket.send(json.dumps(response))
 
 async def start_websocket_client():
-    server_address = 'your_website_address'  # Change to website's WebSocket server address
+    server_address = 'localhost'  # Change to website's WebSocket server address
     server_port = 8765  # Change to website's WebSocket server port
 
     async with websockets.connect(f'ws://{server_address}:{server_port}') as websocket:

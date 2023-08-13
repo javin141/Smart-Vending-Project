@@ -1,20 +1,19 @@
 import asyncio
 from asyncio import Future
 from abc import ABC, abstractmethod
-import time
+import time, selection
 from threading import Thread
 
-from hal import hal_lcd, hal_keypad, hal_rfid_reader, hal_keypad_neo
+from hal import hal_lcd, hal_keypad, hal_rfid_reader, hal_keypad_neo, hal_buzzer
 from typing import Callable
 
 from Inventory_Array import get_item, choose_slot, update_item
 from dispense import dispense_drink
-from hal import hal_key_l
+# from hal import hal_key_l
+from keypad_interfacing import register_listener, interrupt_all
 
 lcd = hal_lcd.lcd()
-# keypad = hal_keypad.HALKeypad()
-hal_key_l.init(lambda _: _)
-
+hal_buzzer.init()
 # loop = asyncio.get_event_loop()
 
 
@@ -31,12 +30,12 @@ class PaymentMethod(ABC):
 class RFIDPay(PaymentMethod):
 
     def process_payment(self, card_id: str, price: float) -> bool:
-        return card_id == 988654710544 # TODO: check the actual ID of the RFID tag
+        return True
 
 
 def prompt(name: str, price: float, when_finished: Callable[[bool], None]):
     lcd.lcd_display_string(name, 1)
-    lcd.lcd_display_string(f"${price} Yes(#)/No(*)", 2)
+    lcd.lcd_display_string(f"${price} Y:#, N:*", 2)
 
     def callback(position):
         if position == "*":
@@ -44,11 +43,8 @@ def prompt(name: str, price: float, when_finished: Callable[[bool], None]):
         elif position == "#":
             when_finished(True)
 
-
-    hal_key_l.change_callback(callback)
-    keypad_thread =  Thread(target=hal_key_l.get_key)
     time.sleep(1)
-    keypad_thread.start()
+    register_listener(callback)
 
 
 def read_card(price: float, payment_method: PaymentMethod = RFIDPay()) -> bool:
@@ -61,9 +57,14 @@ def read_card(price: float, payment_method: PaymentMethod = RFIDPay()) -> bool:
     """
     lcd.lcd_clear()
     lcd.lcd_display_string("Tap card", 1)
-    card_id = rfid_rd.read_id()
+    card_id = rfid_rd.read_id() # Blocking call
+
     if card_id is None:
-        raise Exception("RFID reader returns without card detected.")
+        print("RFID reader returns without card detected.")
+        selection.main()
+    else:
+        hal_buzzer.beep(0.1, 0.5, 1)
+
 
     success = payment_method.process_payment(card_id, price)
     return success
@@ -80,6 +81,7 @@ def update_stock(refcode: int, difference: int, slot: int):
     update_item(refcode, update_dict)
 
 def pay(refcode: int):
+    interrupt_all()
     item = get_item(refcode)
     name = item["name"]
     price = item["price"]
@@ -95,8 +97,10 @@ def pay(refcode: int):
                 lcd.lcd_display_string("Payment success", 1)
                 slot = choose_slot(refcode)
                 update_stock(refcode, -1, slot)
+                time.sleep(1)
                 # Move to dispensing.
                 dispense_drink(refcode)
+                selection.main()
             else:
                 lcd.lcd_clear()
                 lcd.lcd_display_string("Payment failure", 1)
@@ -107,6 +111,8 @@ def pay(refcode: int):
         else:
             lcd.lcd_clear()
             lcd.lcd_display_string("Have a nice day!", 1)
+            time.sleep(2)
+            selection.main()
             # Else, we just return.
     prompt(name, price, user_intent)
 
