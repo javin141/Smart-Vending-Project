@@ -40,7 +40,10 @@ const RedemptionDialog = ({order, setOrder}: { order: Order|null, setOrder: Disp
                 </DialogContentText>
                 {order?.redeemCode ?
                     <QRCode
-                        value={order.redeemCode}/> : <h4>Error: no redemption code found.</h4>}
+                        value={JSON.stringify({
+                                redeem: order.redeemCode,
+                                refcode: order.refcode
+                            })}/> : <h4>Error: no redemption code found.</h4>}
 
             </DialogContent>
             <DialogActions>
