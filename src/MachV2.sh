@@ -2,7 +2,7 @@
 echo "Running..."
 whael=true
 while $whael; do
-while read -t 5 -n1 -r -p "Select state [r]un , [c]onfig : " command_state ||command_state="r" ;do
+while read -t 5 -n1 -r -p "Select state [r]un , [c]onfig : " command_state || command_state="r" ;do
     case $command_state in
     r) echo "   Run"
             running=true
@@ -26,6 +26,10 @@ while read -t 5 -n1 -r -p "Select state [r]un , [c]onfig : " command_state ||com
             then
                 echo "Exit code 11, online"
                 python3 launch.py -l online
+            elif [ "$status" == 12 ]
+            then
+                echo "Exit code 11, config menu"
+                break
             elif [ "$running" = "false" ]
             then
                 echo "Else, Returning to main script"
@@ -37,7 +41,7 @@ while read -t 5 -n1 -r -p "Select state [r]un , [c]onfig : " command_state ||com
             case $config_text in
             n)    ifconfig    ;;
             w)    echo "website status"   ;;
-            s)    python print_array.py   ;;
+            s)    python3 launch.py -l print_array   ;;
             /)          echo -e "\nreturning"    
             break;;
             *)          echo "huh"    ;;
