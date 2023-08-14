@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {getCookie} from "../utils";
+import {getCookie} from "../services/utils.ts";
 import {
     Button,
     Card,
@@ -15,8 +15,8 @@ import 'react-credit-cards-2/dist/es/styles-compiled.css';
 import ReactCreditCards, {Focused} from "react-credit-cards-2";
 import {useLocation, useNavigate} from "react-router-dom";
 import {VendingItem} from "../objs/VendingItem.ts";
-import {CardDetails} from "../auth.ts";
-import {payFor} from "../vending.ts";
+import {CardDetails} from "../services/auth.ts";
+import {payFor} from "../services/vending.ts";
 
 
 function formatExpiry(expiry: string): string {

@@ -1,5 +1,5 @@
 import {getBearer} from "./auth.ts";
-import {errPhraseToMsg, ErrResult} from "./objs/ErrResult.ts";
+import {errPhraseToMsg, ErrResult} from "../objs/ErrResult.ts";
 import {ROOT_BACKEND} from "./utils.ts";
 
 export interface Order {

@@ -1,5 +1,5 @@
 export function setCookie(key: string, value: string) {
-    // TODO: extra feature: session cookie expiry
+    // extra feature: session cookie expiry
     window.localStorage.setItem(key, value)
 }
 
@@ -18,7 +18,7 @@ export function removeLogin() {
     removeCookie("NAME")
 }
 
-export const ROOT_BACKEND = "http://localhost:6788"
+export const ROOT_BACKEND = ""
 
 
 export function getUnixTime(): number {

@@ -1,5 +1,5 @@
 import {createSlice, Middleware} from "@reduxjs/toolkit";
-import {getCookie, removeCookie, setCookie} from "./utils.ts";
+import {getCookie, removeCookie, setCookie} from "./services/utils.ts";
 
 
 const loginSlice = createSlice({
@@ -27,7 +27,7 @@ const localStorageMiddleware: Middleware = (store) => (next) => (action) => {
     const result = next(action) as string
     console.log('next state', store.getState())
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const state = store.getState()
+    const state = store.getState() as {login: {login: string, name: string}}
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     if (state.login.login) {
         setCookie("SESSION", state.login.login)

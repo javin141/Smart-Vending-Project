@@ -1,7 +1,7 @@
 
-import {VendingItem} from "./objs/VendingItem";
+import {VendingItem} from "../objs/VendingItem.ts";
 import {CardDetails, getBearer} from "./auth.ts";
-import {errPhraseToMsg, ErrResult} from "./objs/ErrResult.ts";
+import {errPhraseToMsg, ErrResult} from "../objs/ErrResult.ts";
 import {ROOT_BACKEND} from "./utils.ts";
 //todo change to svc
 export async function getItems(): Promise<VendingItem[]|null> {

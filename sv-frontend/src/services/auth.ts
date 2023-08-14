@@ -1,7 +1,7 @@
-import {getCookie, setCookie} from "./utils";
-import {errPhraseToMsg, ErrResult} from "./objs/ErrResult.ts";
-import {store} from "./main.tsx";
-import {setLoggedIn} from "./login_reducers.ts";
+import {getCookie, ROOT_BACKEND} from "./utils.ts";
+import {errPhraseToMsg, ErrResult} from "../objs/ErrResult.ts";
+import {store} from "../main.tsx";
+import {setLoggedIn} from "../login_reducers.ts";
 
 export function getLogin(): string|boolean {
     const cookie = getCookie("SESSION")
@@ -23,6 +23,8 @@ export interface CardDetails {
     bankCode: string
 }
 
+// interface TokenDetails
+
 export function getBearer() {
     return `Bearer ${getCookie("SESSION") ?? ""}`
 }
@@ -35,7 +37,7 @@ export async function login(username: string, password: string, failureMsg: stri
         password
     }
 
-    const result = await fetch("http://localhost:6788/users/login", {
+    const result = await fetch(`${ROOT_BACKEND}/users/login`, {
         method: "POST",
         // mode: "cors", TODO get CORS working properly when in production
         cache: "no-cache",
@@ -47,7 +49,7 @@ export async function login(username: string, password: string, failureMsg: stri
     })
 
     if (result.ok) {
-        const {token, name} = (await result.json())
+        const {token} = (await result.json()) as {token: string}
         store.dispatch(setLoggedIn(token))
         return {
             success: true,
@@ -67,13 +69,14 @@ export async function login(username: string, password: string, failureMsg: stri
 
 
 export async function signup(name: string, username: string, password: string, failureMsg: string): Promise<LoginResult> {
+    console.log("username")
     const data = {
         name,
         username,
         password
     }
 
-    const result = await fetch("http://localhost:6788/users/signup", {
+    const result = await fetch(`${ROOT_BACKEND}/users/signup`, {
         method: "POST",
         // mode: "cors", TODO get CORS working properly when in production
         cache: "no-cache",
@@ -85,7 +88,7 @@ export async function signup(name: string, username: string, password: string, f
     })
 
     if (result.ok) {
-        const token = (await result.json()).token
+        const {token} = (await result.json()) as {token: string}
         store.dispatch(setLoggedIn(token))
         return {
             success: true,
