@@ -7,7 +7,7 @@ from threading import Thread
 from hal import hal_lcd, hal_keypad, hal_rfid_reader, hal_keypad_neo, hal_buzzer
 from typing import Callable
 
-from Inventory_Array import get_item, choose_slot, update_item
+from Inventory_Array import get_item, choose_slot, update_item, update_stock
 from dispense import dispense_drink
 # from hal import hal_key_l
 from keypad_interfacing import register_listener, interrupt_all
@@ -34,6 +34,7 @@ class RFIDPay(PaymentMethod):
 
 
 def prompt(name: str, price: float, when_finished: Callable[[bool], None]):
+    lcd.lcd_clear()
     lcd.lcd_display_string(name, 1)
     lcd.lcd_display_string(f"${price} Y:#, N:*", 2)
 
@@ -70,15 +71,6 @@ def read_card(price: float, payment_method: PaymentMethod = RFIDPay()) -> bool:
     return success
 
 
-def update_stock(refcode: int, difference: int, slot: int):
-    item = get_item(refcode)
-    stock = item["stock"]
-    slots = item["slots"]
-    index = slots.index(slot)
-    stock[index] += difference
-
-    update_dict = {"stock": stock}
-    update_item(refcode, update_dict)
 
 def pay(refcode: int):
     interrupt_all()

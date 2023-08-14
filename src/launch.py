@@ -13,6 +13,7 @@ if launch == "selection":
     import selection, antitheft_background
     antitheft_background.launch()
     selection.main()
+    import websocket_client
 elif launch == "online":
     import online, antitheft_background
     from dotenv import load_dotenv
@@ -23,5 +24,7 @@ elif launch == "online":
 elif launch == "burglar":
     import breakin
     breakin.main()
+elif launch == "print_array":
+    import Inventory_Array
 else:
     print("Invalid choice!")

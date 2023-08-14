@@ -1,3 +1,6 @@
 [submodule "src/hal"]
 	path = src/hal
 	url = https://github.com/czlucius/raspberry_hal.git
+[submodule "SPI-Py"]
+	path = SPI-Py
+	url = https://github.com/lthiery/SPI-Py/

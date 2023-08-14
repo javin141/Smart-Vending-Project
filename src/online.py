@@ -2,9 +2,9 @@ import time
 from threading import Thread
 import  os, json
 from hal import hal_lcd, hal_key_l
-from Inventory_Array import get_item, update_item
+from Inventory_Array import get_item, update_item, update_stock
 from dispense import dispense_drink
-
+import camera
 lcd = hal_lcd.lcd()
 hal_key_l.init(lambda _: _)
 def exit_chk(key):
@@ -13,10 +13,10 @@ def exit_chk(key):
         os._exit(0)
 
 def redeem_chk():
-    # code = camera.read_barcode_loop_sync()
-    # REMOVE WHEN IN PRODUCTION!
-    code = '{"redeem":"1691487716", "refcode":8}'
-    time.sleep(1)
+    code = camera.read_barcode_loop_sync()
+    
+    #code = '{"redeem":"1691487716", "refcode":8}'
+    #time.sleep(1)
     print("CODE DETECTED", code)
 
     # We need to check if the redeem code is valid.
@@ -47,9 +47,11 @@ def redeem_chk():
         item["redeemcodes"].remove(match)
     else:
         invalid()
-
+    # {"redeem": "1691920382", "timestamp": "1691920382", "slot": 7}
+    slot = match["slot"]  # should be able to get slot
 
     update_item(rc, item)
+    update_stock(rc, -1, slot)
 
     # Dispense
     dispense_drink(rc)
@@ -57,7 +59,6 @@ def redeem_chk():
     lcd.lcd_clear()
     lcd.lcd_display_string("Thank you :)")
     time.sleep(1)
-
 
     open("statusfile", "w").write("0")
     os._exit(0)
