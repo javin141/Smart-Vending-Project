@@ -1,6 +1,6 @@
 yagmail[all]
 pyzbar
-python3-picamera2
 python-dotenv
+cryptography==3.3.2
 websockets
-RPi
+RPi.GPIO
