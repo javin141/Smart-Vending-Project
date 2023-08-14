@@ -4,3 +4,5 @@ python-dotenv
 cryptography==3.3.2
 websockets
 RPi.GPIO
+smbus
+spi
