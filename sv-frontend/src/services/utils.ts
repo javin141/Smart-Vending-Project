@@ -18,7 +18,7 @@ export function removeLogin() {
     removeCookie("NAME")
 }
 
-export const ROOT_BACKEND = "http://localhost:6788"
+export const ROOT_BACKEND = ""
 
 
 export function getUnixTime(): number {

@@ -4,6 +4,7 @@ WORKDIR /sv-backend
 RUN echo Please ensure that you have the frontend built!
 COPY package*.json ./
 COPY tsconfig.json ./
+RUN npm i --save-dev @types/node
 RUN npm install typescript -g
 COPY . .
 RUN tsc --outDir ./build/
