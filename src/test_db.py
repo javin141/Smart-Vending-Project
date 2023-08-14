@@ -26,6 +26,9 @@ def test_update():
     to_update = {'refcode': 1, 'name': 'Coke', 'price': 15, 'slots': [99,133,134,156,178], 'stock': [3, 2, 6, 9, 8],
      'redeemcodes': []}
     update_item(1, to_update)
+    item = get_item(1, True)
+    assert item == to_update
+
 
 
 
