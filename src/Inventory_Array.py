@@ -29,7 +29,7 @@ if not pathexist:
     Initial_stock = [
         ('1', 'Coca-cola', '1.5', '1, 2, 3, 4, 5, 6', '3, 2, 6, 4, 7, 6', "[]"),
         ('2', 'Sprite', '1.7', '7, 8, 9, 10, 11', '2, 5, 3, 5, 6', "[]"),
-        ('3', 'A&W', '1.8', '12, 13, 14, 15, 16, 17', '3, 2, 5, 4, 2, 3,', "[]"),
+        ('3', 'A&W', '1.8', '12, 13, 14, 15, 16, 17', '3, 2, 5, 4, 2, 3', "[]"),
         ('4', 'Fanta_Grape', '1.2', '18, 19, 20, 21, 22, 23', '2, 5, 4, 3, 2, 5', "[]"),
         ('5', 'Ice_Lemon_Tea', '1.8', '24, 25, 26, 27, 28, 29, 30', '3, 2, 6, 4, 3, 5, 7', "[]"),
         ('6', 'Coke_Zero', '1.7', '31, 32, 33, 34, 35, 36, 37, 38', '3, 5, 2, 6, 3, 4, 5, 2', "[]"),
@@ -167,6 +167,7 @@ def update_item(refcode: int, new_item: dict):
 
 
 def choose_slot(refcode: int) -> Optional[int]:
+    print("refcode", refcode)
     item = get_item(refcode)
     print("Item chosen", item)
     slots = item["slots"]
