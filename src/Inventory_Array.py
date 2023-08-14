@@ -4,8 +4,7 @@ from typing import Optional
 # from json import dumps, loads
 import json
 from utils import *
-# TODO!
-#  CHANGE ALL FUNCS TO CHECK REDEEMCODE!
+
 
 DB_FILENAME = 'Vending.sqlite'
 pathexist = os.path.exists(DB_FILENAME)
@@ -28,19 +27,17 @@ if not pathexist:
     # {redeem: string, timestamp: string, slot: int}[]
 
     Initial_stock = [
-                        ('1','Coca-cola','1.5','1,2,3,4,5,6','3,2,6,4,7,6', "[]"),
-                        ('2','Sprite','1.7','7,8,9,10,11','2,5,3,5,6', "[]"),
-                        ('3','A&W','1.8','12,13,14,15,16,17','3,2,5,4,2,3,', "[]"),
-                        ('4','Fanta_Grape','1.2','18,19,20,21,22,23','2,5,4,3,2,5', "[]"),
-                        ('5','Ice_Lemon_Tea','1.8','24,25,26,27,28,29,30','3,2,6,4,3,5,7',"[]"),
-                        ('6','Coke_Zero','1.7','31,32,33,34,35,36,37,38','3,5,2,6,3,4,5,2',"[]"),
-                        ('7','7-up','1.4','39,40,41,42,43,44,45','6,6,7,4,3,2,6',"[]"),
-                        ("8", "Water", "0.9", "46,47", "1,1", "[]")
+        ('1', 'Coca-cola', '1.5', '1, 2, 3, 4, 5, 6', '3, 2, 6, 4, 7, 6', "[]"),
+        ('2', 'Sprite', '1.7', '7, 8, 9, 10, 11', '2, 5, 3, 5, 6', "[]"),
+        ('3', 'A&W', '1.8', '12, 13, 14, 15, 16, 17', '3, 2, 5, 4, 2, 3,', "[]"),
+        ('4', 'Fanta_Grape', '1.2', '18, 19, 20, 21, 22, 23', '2, 5, 4, 3, 2, 5', "[]"),
+        ('5', 'Ice_Lemon_Tea', '1.8', '24, 25, 26, 27, 28, 29, 30', '3, 2, 6, 4, 3, 5, 7', "[]"),
+        ('6', 'Coke_Zero', '1.7', '31, 32, 33, 34, 35, 36, 37, 38', '3, 5, 2, 6, 3, 4, 5, 2', "[]"),
+        ('7', '7-up', '1.4', '39, 40, 41, 42, 43, 44, 45', '6, 6, 7, 4, 3, 2, 6', "[]"),
+        ("8", "Water", "0.9", "46, 47", "1, 1", "[]")
     ]
 
     c.executemany("INSERT INTO Vending Values(?,?,?,?,?,?)", Initial_stock)
-
-
 
     conn.commit()
 
@@ -55,7 +52,7 @@ def get_all_not_deserialised() -> list:
     return results
 
 
-def get_item(refcode: int) -> Optional[dict]:
+def get_item(refcode: int, exclude_redeems: bool=False) -> Optional[dict]:
     """
     Gets an item based on its refcode.
     :param refcode: refcode of the item, an int.
@@ -77,7 +74,7 @@ def get_item(refcode: int) -> Optional[dict]:
         "refcode": results[0],
         "name": results[1],
         "price": results[2],
-        }
+    }
     print("Results,", results)
     try:
         slots = deserialise_ints(results[3])
@@ -98,20 +95,20 @@ def get_item(refcode: int) -> Optional[dict]:
 
         else:
             raise Exception("redeemcode is not a list!")
-        #
-        for redeemcode in redeemcodes:
-            # {redeem: string, timestamp: string}
-            slot = redeemcode["slot"]
-            timestamp = redeemcode["timestamp"]
-            time_int = int(timestamp)
-            curr_time = int(time.time())
-            diff = curr_time - time_int
-            if diff < 86400:
-                # less than 24 h
-                try:
-                    stock[slots.index(slot)] -= 1
-                except ValueError:
-                    continue # just ignore this and leave it as it is.
+        if not exclude_redeems:
+            for redeemcode in redeemcodes:
+                # {redeem: string, timestamp: string}
+                slot = redeemcode["slot"]
+                timestamp = redeemcode["timestamp"]
+                time_int = int(timestamp)
+                curr_time = int(time.time())
+                diff = curr_time - time_int
+                if diff < 86400:
+                    # less than 24 h
+                    try:
+                        stock[slots.index(slot)] -= 1
+                    except ValueError:
+                        continue  # just ignore this and leave it as it is.
 
 
     except Exception as e:
@@ -119,7 +116,18 @@ def get_item(refcode: int) -> Optional[dict]:
         return None
     items["stock"] = stock
     return items
-    
+
+
+def update_stock(refcode: int, difference: int, slot: int):
+    item = get_item(refcode)
+    stock = item["stock"]
+    slots = item["slots"]
+    index = slots.index(slot)
+    stock[index] += difference
+
+    update_dict = {"stock": stock}
+    update_item(refcode, update_dict)
+
 
 def update_item(refcode: int, new_item: dict):
     cu = conn.cursor()
@@ -160,9 +168,15 @@ def update_item(refcode: int, new_item: dict):
 
 def choose_slot(refcode: int) -> Optional[int]:
     item = get_item(refcode)
-    print("Item chosen",item)
+    print("Item chosen", item)
     slots = item["slots"]
     stocks = item["stock"]
+    try:
+        print(stocks)
+        if sum(stocks) <= 0:
+            return None
+    except:
+        return None
     redeemcodes = item["redeemcodes"]
     # {redeem: string, timestamp: string, slot: int}[]
 
@@ -184,6 +198,8 @@ def choose_slot(refcode: int) -> Optional[int]:
             break
 
     return slot
+
+
 # def add_to(refcode)
 
 
@@ -191,4 +207,3 @@ def choose_slot(refcode: int) -> Optional[int]:
 if __name__ == "__main__":
     while True:
         exec(input(">>>"))
-
