@@ -10,18 +10,20 @@ wssv.on('connection', function connection(ws) {
 
     ws.on('message', function message(data) {
         console.log('received: %s', data);
-        let index = 0
         const deleteIndices = []
+        console.log("callbacks list", callbacksList)
         for (const i in callbacksList) {
             const shouldDelete = callbacksList[i](JSON.parse(data.toString()), i)
+            console.log("ShouldDelete", shouldDelete)
             if (shouldDelete) {
-                deleteIndices.push(index)
+                deleteIndices.push(i)
             }
-            index++
         }
         // Delete from the back so there won't be wrong deletions
         for (const i of deleteIndices.reverse()) {
+            console.log("Removing callback ", i, callbacksList)
             delete callbacksList[i]
+            console.log("Removed callback", callbacksList)
         }
     });
 
