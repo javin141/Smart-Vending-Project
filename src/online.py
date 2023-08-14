@@ -4,7 +4,7 @@ import  os, json
 from hal import hal_lcd, hal_key_l
 from Inventory_Array import get_item, update_item, update_stock
 from dispense import dispense_drink
-
+import camera
 lcd = hal_lcd.lcd()
 hal_key_l.init(lambda _: _)
 def exit_chk(key):
@@ -13,10 +13,10 @@ def exit_chk(key):
         os._exit(0)
 
 def redeem_chk():
-    # code = camera.read_barcode_loop_sync()
-    # REMOVE WHEN IN PRODUCTION!
-    code = '{"redeem":"1691487716", "refcode":8}'
-    time.sleep(1)
+    code = camera.read_barcode_loop_sync()
+    
+    #code = '{"redeem":"1691487716", "refcode":8}'
+    #time.sleep(1)
     print("CODE DETECTED", code)
 
     # We need to check if the redeem code is valid.
