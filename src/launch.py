@@ -13,6 +13,7 @@ if launch == "selection":
     import selection, antitheft_background
     antitheft_background.launch()
     selection.main()
+    import websocket_client
 elif launch == "online":
     import online, antitheft_background
     from dotenv import load_dotenv
