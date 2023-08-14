@@ -23,5 +23,7 @@ elif launch == "online":
 elif launch == "burglar":
     import breakin
     breakin.main()
+elif launch == "print_array":
+    import Inventory_Array
 else:
     print("Invalid choice!")
