@@ -15,7 +15,7 @@ export interface OrderReq {
  */
 export function sendOrder(order: OrderReq): string {
     const {refcode, slot} = order
-    const orderCode = crypto.randomUUID()
+    const orderCode = crypto.randomUUID() + Date()
     // TODO: send the data to the RPi!
     return orderCode
 }
@@ -44,7 +44,7 @@ export interface RawItem {
 
 export function checkStock(refcode: number): Promise<StockResponse|null> {
     return new Promise<StockResponse|null>((resolve, reject) => {
-        const reqID = crypto.randomUUID().toString()
+        const reqID = crypto.randomUUID().toString() + Date()
         const callback = (data: any, id: string) => {
             console.log("data", data)
             if (data["endpoint"] === "checkstock" && id == reqID) {
@@ -72,7 +72,7 @@ export type VendingItem = {
 export function getInv(): Promise<VendingItem[]> {
 
     return new Promise<VendingItem[]>((resolve, reject) => {
-        const reqID = crypto.randomUUID().toString()
+        const reqID = crypto.randomUUID().toString() + Date()
 
         const callback = (data: any, id: string, endpoint?: string) => {
             console.log("data", data)
@@ -134,7 +134,7 @@ export function getInv(): Promise<VendingItem[]> {
 
 export function placeOrder(refcode: number, slot?: number): Promise<string|null> {
     return new Promise<string|null>((resolve, reject) => {
-        const reqID = crypto.randomUUID().toString()
+        const reqID = crypto.randomUUID().toString() + Date()
         const callback = (data: any, id: string) => {
             console.log("data", data)
             if (data["endpoint"] === "placeorder" && id == reqID) {
@@ -157,7 +157,7 @@ export function placeOrder(refcode: number, slot?: number): Promise<string|null>
 
 export function findSlot(refcode: number): Promise<number|null> {
     return new Promise<number|null>((resolve, reject) => {
-        const reqID = crypto.randomUUID().toString()
+        const reqID = crypto.randomUUID().toString() + Date()
         const callback = (data: any, id: string) => {
             console.log("data", data)
             if (data["endpoint"] === "chooseslot" && id == reqID) {
@@ -165,7 +165,7 @@ export function findSlot(refcode: number): Promise<number|null> {
                     // Slot is found
                     console.log("SLOT FOUND",data.slot)
                     resolve(data.slot)
-
+                    return true
                 } else {
                     resolve(null)
                 }
