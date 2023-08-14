@@ -33,6 +33,10 @@ def key_press(key):
         stop_listening(key_press)  # Remove the listener when "#" is pressed
         if final_choice == "67873":
             antitheft_background.toggle_bypass()
+        elif final_choice == "68701":
+            open("statusfile", "w").write("12")
+            os._exit(12)
+
         else:
             item = get_item(int(final_choice))
             if item is None:
