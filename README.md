@@ -7,6 +7,12 @@ Project for ET0735, DevOps for AIoT, Semester 1 2023.
 ### Hardware (Raspberry Pi)
 Install necessary libraries with `pip install -r src/requirements.txt`  
 Launch the program on the Pi by executing `src/MachV2.sh`.
+
+#### Docker
+The image is up on Docker Hub (`czlucius/smartvending-hw:v2.1`)
+Run the following command to bring it online:  
+`docker run -it -v /home/pi/persist:/persist -v /home/pi/output:/tmp -v /run/udev:/run/udev --env-file src/.env -e MAIL_ARR=devops@czlucius.dev -e MAIL_PW=J0xto8TSt7Ppcl2q --privileged --device=/dev/vchiq:/dev/vchiq --privileged czlucius/smartvending-hw:v2.1`
+
 ### Online (MERN)
 - `cd` into `sv-backend`.
 - Build the frontend with `npm run build-frontend`
@@ -14,6 +20,7 @@ Launch the program on the Pi by executing `src/MachV2.sh`.
   - Run `docker build -t <container name> .`
   - To run the container, `docker run <container name> -p 6788:6788 -e <MONGODB_URL> -e <JWT_KEY>`
   - Service will be exposed on port 6788.
+  - WebSockets will be exposed on port 8765.
 
 
 ## Software Architecture description
