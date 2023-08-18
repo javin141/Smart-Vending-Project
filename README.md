@@ -51,6 +51,19 @@ The software architecture of this project is described below.
 
 The SmartVending project utilizes a combination of Python for the main vending machine program on the Raspberry Pi, Shell Script to launch and restart the Python programs, and JavaScript/TypeScript for the web-based interface, acting as a WebSocket server. This setup allows seamless communication between the vending machine and the website, enabling real-time updates and order handling.
 
+### SQLite DB implementation
+The Database on the Pi's side uses SQLite.  
+Schema:
+```
+refcode integer,
+drink_name text,
+price integer,
+slot text, (comma seperated ints)
+stock text, (comma seperated ints)
+redeemcodes text (JSON object)
+```
+
+
 #### WebSocket Details
 The communication flow involves the Raspberry Pi (acting as the client) sending pings to the WebSocket server (the website), which responds with order notifications or updates to the stock. The website also initiates stock checks and allows users to place orders.
 
