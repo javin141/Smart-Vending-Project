@@ -28,6 +28,8 @@ Note: you will have to supply your own mail credentials. Currently this works wi
   - To run the container, `docker run <container name> -p 6788:6788 -e <MONGODB_URL> -e <JWT_KEY>`
   - Service will be exposed on port 6788.
   - WebSockets will be exposed on port 8765.
+ 
+A hosted version is available on https://smartvending-czlucius.koyeb.app.
 
 
 ## Software Architecture description
