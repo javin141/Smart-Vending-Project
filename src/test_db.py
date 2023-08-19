@@ -30,5 +30,8 @@ def test_update():
     assert item == to_update
 
 
+def test_choose_slot():
+    assert choose_slot(4) in [18, 19, 20, 21, 22, 23]
+
 
 
