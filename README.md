@@ -11,7 +11,10 @@ Launch the program on the Pi by executing `src/MachV2.sh`.
 #### Docker
 The image is up on Docker Hub (`czlucius/smartvending-hw:v2.1`)
 Run the following command to bring it online:  
-`docker run -it -v /home/pi/persist:/persist -v /home/pi/output:/tmp -v /run/udev:/run/udev --env-file src/.env -e MAIL_ARR=devops@czlucius.dev -e MAIL_PW=J0xto8TSt7Ppcl2q --privileged --device=/dev/vchiq:/dev/vchiq --privileged czlucius/smartvending-hw:v2.1`
+`docker run -it -v <DIRECTORY FOR PERSISTENCE>:/persist -v /home/pi/output:/tmp -v /run/udev:/run/udev --env-file src/.env -e MAIL_ARR=<YOUR_EMAIL> -e MAIL_PW=<YOUR_EMAIL_PASSWORD> --privileged --device=/dev/vchiq:/dev/vchiq --privileged czlucius/smartvending-hw:v2.1`  
+
+> [!NOTE]  
+> The program is defined to send the email address to a specific email address. To change this, append `bash` at the end of the command, and modify `src/breakin.py`
 
 ### Online (MERN)
 - `cd` into `sv-backend`.
