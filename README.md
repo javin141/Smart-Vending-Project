@@ -9,12 +9,16 @@ Install necessary libraries with `pip install -r src/requirements.txt`
 Launch the program on the Pi by executing `src/MachV2.sh`.
 
 #### Docker
-The image is up on Docker Hub (`czlucius/smartvending-hw:v2.1`)
-Run the following command to bring it online:  
-`docker run -it -v <DIRECTORY FOR PERSISTENCE>:/persist -v /home/pi/output:/tmp -v /run/udev:/run/udev --env-file src/.env -e MAIL_ARR=<YOUR_EMAIL> -e MAIL_PW=<YOUR_EMAIL_PASSWORD> --privileged --device=/dev/vchiq:/dev/vchiq --privileged czlucius/smartvending-hw:v2.1`  
+The image is up on Docker Hub (`czlucius/smartvending-hw`)
 
-> [!NOTE]  
-> The program is defined to send the email address to a specific email address. To change this, append `bash` at the end of the command, and modify `src/breakin.py`
+There are 2 versions:
+- v2.1, the version that was ran on the Pi, where since the picam resolution was bad/blurry, we used an image file as source instead. This version has the email hardcoded.
+- v2.1.1, an updated version. This version reads from PiCamera2 instead, and also uses `DEST_MAIL` as the destination email. Use `-e` to add this environment variable.
+
+Run the following command to bring it online:  
+Note: you will have to supply your own mail credentials. Currently this works with Zoho's SMTP server. Edit the file `src/mail.py` to modify the SMTP server, with `vim` after appending `bash` to the following command.
+
+`docker run -it -v <DIRECTORY FOR PERSISTENCE>:/persist -v <TEMP_FILE_DIR FOR image>:/tmp -v /run/udev:/run/udev --env-file src/.env -e MAIL_ARR=<YOUR_EMAIL> -e MAIL_PW=<YOUR_EMAIL_PASSWORD> --privileged --device=/dev/vchiq:/dev/vchiq --privileged czlucius/smartvending-hw:<VERSION>`  
 
 ### Online (MERN)
 - `cd` into `sv-backend`.
